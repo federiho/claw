@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigitalBeauty Pro — Documents</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #1a1a1a;
+            color: #e8eaed;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+        }
+        .header {
+            background: #2d2d2d;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3c4043;
+        }
+        .header h1 { font-size: 20px; font-weight: 500; }
+        .logout-btn {
+            background: transparent;
+            color: #8ab4f8;
+            border: 1px solid #8ab4f8;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .logout-btn:hover { background: rgba(138, 180, 248, 0.1); }
+        .container { padding: 30px; max-width: 1200px; margin: 0 auto; }
+        .section-title {
+            color: #9aa0a6;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            margin-top: 30px;
+        }
+        .file-list { background: #2d2d2d; border-radius: 8px; overflow: hidden; }
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #3c4043;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .file-item:hover { background: #3c4043; }
+        .file-item:last-child { border-bottom: none; }
+        .file-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .file-name {
+            flex: 1;
+            font-size: 14px;
+            color: #e8eaed;
+        }
+        .file-meta {
+            color: #9aa0a6;
+            font-size: 12px;
+        }
+        .folder-row {
+            background: rgba(138, 180, 248, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DigitalBeauty Pro — Document Management</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <div class="section-title">Folders</div>
+        <div class="file-list">
+            <div class="file-item folder-row" onclick="alert('Folder coming soon')">
+                <div class="file-icon">📂</div>
+                <div class="file-name">Strategy Documents</div>
+                <div class="file-meta">3 items</div>
+            </div>
+            <div class="file-item folder-row" onclick="alert('Folder coming soon')">
+                <div class="file-icon">📂</div>
+                <div class="file-name">Market Analysis</div>
+                <div class="file-meta">1 item</div>
+            </div>
+        </div>
+
+        <div class="section-title">Files</div>
+        <div class="file-list">
+            <div class="file-item" onclick="window.location.href='docs/product-market-fit-analysis.html'">
+                <div class="file-icon">📄</div>
+                <div class="file-name">Product-Market-Fit Analysis</div>
+                <div class="file-meta">PDF • Feb 21, 2026</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        if (sessionStorage.getItem("authenticated") !== "true") {
+            window.location.href = "index.html";
+        }
+        
+        function logout() {
+            sessionStorage.removeItem("authenticated");
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
