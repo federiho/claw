@@ -1,76 +1,36 @@
 {
-  "lastUpdated": "2026-02-21T17:40:00Z",
+  "lastUpdated": "2026-02-21T17:55:00Z",
   "tasks": [
     {
-      "id": "45",
-      "title": "Nuova task senza data - appare oggi",
-      "status": "todo",
-      "priority": "high",
-      "due": null,
-      "assignee": "FHG"
-    },
-    {
-      "id": "44",
-      "title": "Altra task senza data - rolling",
-      "status": "todo",
-      "priority": "medium",
-      "due": null,
-      "assignee": "FHG"
-    },
-    {
-      "id": "43",
-      "title": "Review DigitalBeauty documentation",
+      "id": "50",
+      "title": "TEST SYNC - Task aggiornata ora",
       "status": "todo",
       "priority": "high",
       "due": "2026-02-21",
       "assignee": "FHG"
     },
     {
-      "id": "42",
-      "title": "Call with marketing team",
+      "id": "49",
+      "title": "Task per domani",
       "status": "todo",
       "priority": "medium",
       "due": "2026-02-22",
       "assignee": "FHG"
     },
     {
-      "id": "41",
-      "title": "Prepare presentation for client",
+      "id": "48",
+      "title": "Task senza data - rolling",
       "status": "todo",
       "priority": "high",
-      "due": "2026-02-24",
+      "due": null,
       "assignee": "FHG"
     },
     {
-      "id": "40",
-      "title": "Weekly team meeting",
-      "status": "todo",
-      "priority": "low",
-      "due": "2026-02-25",
-      "assignee": "FHG"
-    },
-    {
-      "id": "39",
-      "title": "OVERDUE: Task scaduta ieri",
+      "id": "47",
+      "title": "OVERDUE - Task scaduta",
       "status": "todo",
       "priority": "high",
       "due": "2026-02-20",
-      "assignee": "FHG"
-    },
-    {
-      "id": "38",
-      "title": "OVERDUE: Task scaduta 3 giorni fa",
-      "status": "todo",
-      "priority": "medium",
-      "due": "2026-02-18",
-      "assignee": "FHG"
-    },
-    {
-      "id": "37",
-      "title": "Completed task example",
-      "status": "done",
-      "priority": "medium",
-      "due": "2026-02-19",
       "assignee": "FHG"
     }
   ]
