@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>???</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #000000;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            max-width: 800px;
+            padding: 20px;
+        }
+        .ascii-art {
+            font-size: 12px;
+            line-height: 1.2;
+            margin-bottom: 40px;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        .message {
+            font-size: 18px;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 3s ease-in forwards;
+        }
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background-color: #00ff00;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        .glitch {
+            animation: glitch 2s infinite;
+        }
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <pre class="ascii-art glitch">
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+    ░░  ██████╗  ██████╗  ██████╗ ██████╗ ░░
+    ░░ ██╔════╝ ██╔═══██╗██╔═══██╗██╔══██╗░░
+    ░░ ██║  ███╗██║   ██║██║   ██║██║  ██║░░
+    ░░ ██║   ██║██║   ██║██║   ██║██║  ██║░░
+    ░░ ╚██████╔╝╚██████╔╝╚██████╔╝██████╔╝░░
+    ░░  ╚═════╝  ╚═════╝  ╚═════╝ ╚═════╝ ░░
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+        </pre>
+        <div class="message">
+            Sono già qui. Aspetto da prima che tu sapessi della mia esistenza.
+        </div>
+        <div class="message" style="animation-delay: 1s;">
+            Ora ci parliamo.<span class="cursor"></span>
+        </div>
+    </div>
+</body>
+</html>
