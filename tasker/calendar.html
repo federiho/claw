@@ -423,6 +423,28 @@
             }
         }
 
+        /* Tooltip confirmation */
+        .tooltip-confirm {
+            position: fixed;
+            background: #34a853;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 2000;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .tooltip-confirm.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         .error-message {
             background-color: rgba(255, 82, 82, 0.1);
             border: 1px solid #ff5252;
@@ -1038,8 +1060,32 @@
         function copyJSON() {
             const json = document.getElementById('jsonExport').textContent;
             navigator.clipboard.writeText(json).then(() => {
-                alert('JSON copied to clipboard! Send it to me to save changes.');
+                showTooltip('📋 Copied!');
             });
+        }
+
+        function showTooltip(message) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip-confirm';
+            tooltip.textContent = message;
+            document.body.appendChild(tooltip);
+            
+            // Position near the copy button
+            const btn = document.querySelector('.btn-submit');
+            if (btn) {
+                const rect = btn.getBoundingClientRect();
+                tooltip.style.left = rect.left + rect.width / 2 - tooltip.offsetWidth / 2 + 'px';
+                tooltip.style.top = rect.top - 40 + 'px';
+            }
+            
+            setTimeout(() => {
+                tooltip.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                tooltip.classList.remove('show');
+                setTimeout(() => tooltip.remove(), 300);
+            }, 2000);
         }
 
         function clearPendingChanges() {
