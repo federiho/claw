@@ -622,6 +622,36 @@
             gap: 10px;
         }
 
+        /* Task completion toggle */
+        .task-card {
+            position: relative;
+        }
+
+        .task-complete-toggle {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #34a853;
+        }
+
+        .task-card.completed {
+            opacity: 0.7;
+        }
+
+        .task-card.completed .task-title {
+            text-decoration: line-through;
+            color: #808080;
+        }
+
+        .save-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         /* Drag & Drop styles */
         .task-card.dragging {
             opacity: 0.5;
@@ -922,6 +952,24 @@
         }
 
         function addPendingChange(type, data) {
+            // Apply change immediately to tasks for preview
+            switch(type) {
+                case 'create':
+                    tasks.push(data);
+                    break;
+                case 'update':
+                    const idx = tasks.findIndex(t => t.id === data.id);
+                    if (idx !== -1) tasks[idx] = {...tasks[idx], ...data};
+                    break;
+                case 'move':
+                    const taskIdx = tasks.findIndex(t => t.id === data.id);
+                    if (taskIdx !== -1) tasks[taskIdx].due = data.due;
+                    break;
+                case 'delete':
+                    tasks = tasks.filter(t => t.id !== data.id);
+                    break;
+            }
+            
             // Remove any existing change for this task
             pendingChanges = pendingChanges.filter(c => !(c.data.id === data.id && c.type !== 'create'));
             pendingChanges.push({type, data, timestamp: new Date().toISOString()});
@@ -1057,14 +1105,16 @@
         function createTaskCard(task) {
             const dueDate = task.due ? new Date(task.due) : null;
             const isOverdue = dueDate && isPast(dueDate) && !isToday(dueDate);
+            const isCompleted = task.status === 'done';
             
-            let html = `<div class="task-card priority-${task.priority}${isOverdue ? ' overdue' : ''}" draggable="true" data-task-id="${task.id}">`;
+            let html = `<div class="task-card priority-${task.priority}${isOverdue ? ' overdue' : ''}${isCompleted ? ' completed' : ''}" draggable="true" data-task-id="${task.id}">`;
+            html += `<input type="checkbox" class="task-complete-toggle" ${isCompleted ? 'checked' : ''} onclick="toggleTaskComplete('${task.id}', this.checked)" title="Mark as ${isCompleted ? 'incomplete' : 'complete'}">`;
             html += `<div class="task-id">#${task.id}</div>`;
             html += `<div class="task-title">${escapeHtml(task.title)}</div>`;
             html += `<div class="task-meta">`;
             html += `<span class="task-priority ${task.priority}">${task.priority}</span>`;
             
-            if (isOverdue) {
+            if (isOverdue && !isCompleted) {
                 html += `<span class="task-due overdue">OVERDUE</span>`;
             } else if (dueDate) {
                 html += `<span class="task-due">${dueDate.toLocaleDateString('it-IT', { month: 'short', day: 'numeric' })}</span>`;
@@ -1072,6 +1122,14 @@
             
             html += `</div></div>`;
             return html;
+        }
+
+        function toggleTaskComplete(taskId, isComplete) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                const newStatus = isComplete ? 'done' : 'todo';
+                addPendingChange('update', { id: taskId, status: newStatus });
+            }
         }
 
         /**
