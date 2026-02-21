@@ -1,0 +1,221 @@
+/* Reset e base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background-color: #F8F7F4;
+    color: #1A1A1A;
+    line-height: 1.5;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 48px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.nav-left,
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.nav-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-link {
+    font-size: 14px;
+    color: #1A1A1A;
+    text-decoration: none;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: opacity 0.2s ease;
+}
+
+.nav-link:hover {
+    opacity: 0.7;
+}
+
+.dropdown-arrow {
+    font-size: 10px;
+    margin-left: 2px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-y {
+    display: block;
+}
+
+.login-link {
+    font-size: 14px;
+    color: #1A1A1A;
+    text-decoration: none;
+    margin-right: 8px;
+    transition: opacity 0.2s ease;
+}
+
+.login-link:hover {
+    opacity: 0.7;
+}
+
+.apply-btn {
+    font-size: 14px;
+    color: #FFFFFF;
+    background-color: #000000;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+}
+
+.apply-btn:hover {
+    opacity: 0.8;
+}
+
+/* Hero Section */
+.hero {
+    min-height: calc(100vh - 72px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 48px 48px;
+    position: relative;
+}
+
+.hero-content {
+    max-width: 900px;
+    text-align: center;
+}
+
+.hero-title {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 72px;
+    line-height: 1.1;
+    color: #1A1A1A;
+    margin-bottom: 48px;
+    font-weight: 400;
+}
+
+.title-regular {
+    display: block;
+    font-style: normal;
+}
+
+.title-italic {
+    display: inline;
+    font-style: italic;
+}
+
+.superscript {
+    font-size: 18px;
+    vertical-align: super;
+    margin-left: 4px;
+    font-style: normal;
+    font-weight: 400;
+}
+
+/* Quote Section */
+.quote-section {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.quote-text {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 18px;
+    font-style: italic;
+    color: #4A4A4A;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.quote-sup {
+    font-size: 12px;
+    vertical-align: super;
+    margin-right: 2px;
+}
+
+.quote-attribution {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 16px;
+    font-style: italic;
+    color: #4A4A4A;
+    text-align: right;
+}
+
+/* Scroll Indicator */
+.scroll-indicator {
+    position: absolute;
+    bottom: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+}
+
+.arrow-down {
+    opacity: 0.6;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    40% {
+        transform: translateX(-50%) translateY(-8px);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-4px);
+    }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .navbar {
+        padding: 16px 24px;
+    }
+    
+    .hero-title {
+        font-size: 56px;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    
+    .nav-left,
+    .nav-right {
+        gap: 16px;
+    }
+    
+    .hero-title {
+        font-size: 40px;
+    }
+    
+    .quote-text {
+        font-size: 16px;
+    }
+}
