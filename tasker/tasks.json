@@ -1,59 +1,77 @@
 {
-  "lastUpdated": "2026-02-21T17:30:00Z",
+  "lastUpdated": "2026-02-21T17:40:00Z",
   "tasks": [
     {
-      "id": "42",
-      "title": "Review DigitalBeauty PMF Analysis document",
-      "status": "in_progress",
+      "id": "45",
+      "title": "Nuova task senza data - appare oggi",
+      "status": "todo",
       "priority": "high",
+      "due": null,
+      "assignee": "FHG"
+    },
+    {
+      "id": "44",
+      "title": "Altra task senza data - rolling",
+      "status": "todo",
+      "priority": "medium",
+      "due": null,
+      "assignee": "FHG"
+    },
+    {
+      "id": "43",
+      "title": "Review DigitalBeauty documentation",
+      "status": "todo",
+      "priority": "high",
+      "due": "2026-02-21",
+      "assignee": "FHG"
+    },
+    {
+      "id": "42",
+      "title": "Call with marketing team",
+      "status": "todo",
+      "priority": "medium",
       "due": "2026-02-22",
-      "assignee": "FHG",
-      "created": "2026-02-21"
+      "assignee": "FHG"
     },
     {
       "id": "41",
-      "title": "Schedule call with Abhishek about payments",
-      "status": "todo",
-      "priority": "high",
-      "due": "2026-02-23",
-      "assignee": "FHG",
-      "created": "2026-02-20"
-    },
-    {
-      "id": "40",
-      "title": "Cardiologist visit appointment",
+      "title": "Prepare presentation for client",
       "status": "todo",
       "priority": "high",
       "due": "2026-02-24",
-      "assignee": "FHG",
-      "created": "2026-02-19"
+      "assignee": "FHG"
+    },
+    {
+      "id": "40",
+      "title": "Weekly team meeting",
+      "status": "todo",
+      "priority": "low",
+      "due": "2026-02-25",
+      "assignee": "FHG"
     },
     {
       "id": "39",
-      "title": "Garage appointment via Olgiati",
-      "status": "done",
-      "priority": "medium",
-      "due": "2026-02-21",
-      "assignee": "FHG",
-      "created": "2026-02-18"
+      "title": "OVERDUE: Task scaduta ieri",
+      "status": "todo",
+      "priority": "high",
+      "due": "2026-02-20",
+      "assignee": "FHG"
     },
     {
       "id": "38",
-      "title": "Checkout dominio per nuovo progetto",
+      "title": "OVERDUE: Task scaduta 3 giorni fa",
       "status": "todo",
-      "priority": "low",
-      "due": "2026-02-28",
-      "assignee": "FHG",
-      "created": "2026-02-21"
+      "priority": "medium",
+      "due": "2026-02-18",
+      "assignee": "FHG"
     },
     {
       "id": "37",
-      "title": "Update GitHub digitalbeauty documentation",
+      "title": "Completed task example",
       "status": "done",
       "priority": "medium",
-      "due": "2026-02-21",
-      "assignee": "GG",
-      "created": "2026-02-21"
+      "due": "2026-02-19",
+      "assignee": "FHG"
     }
   ]
 }
