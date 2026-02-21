@@ -485,14 +485,31 @@
         function getTasksForDate(date) {
             const dateStr = getDateString(date);
             const today = new Date();
+            today.setHours(0, 0, 0, 0);
             const todayStr = getDateString(today);
 
             return tasks.filter(task => {
+                // Completed tasks - show on their original due date
+                if (task.status === 'done') {
+                    return task.due === dateStr;
+                }
+                
                 // Tasks without due date go to today
                 if (task.due === null || task.due === undefined) {
                     return dateStr === todayStr;
                 }
-                // Tasks with due date match that date
+                
+                // Check if task is overdue (due date is before today)
+                const taskDueDate = new Date(task.due);
+                taskDueDate.setHours(0, 0, 0, 0);
+                const isOverdue = taskDueDate < today;
+                
+                // If overdue, show on TODAY (rolling behavior)
+                if (isOverdue) {
+                    return dateStr === todayStr;
+                }
+                
+                // Regular task - check if due date matches
                 return task.due === dateStr;
             });
         }
