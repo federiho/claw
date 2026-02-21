@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restricted Access</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #0a0a0a;
+            color: #00ff00;
+            font-family: "Courier New", Courier, monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-container {
+            text-align: center;
+            padding: 40px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+            max-width: 400px;
+            width: 90%;
+        }
+        h1 { margin-bottom: 30px; font-size: 24px; letter-spacing: 3px; }
+        input[type="password"] {
+            background: #000;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 15px;
+            font-size: 16px;
+            font-family: "Courier New", Courier, monospace;
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 5px;
+        }
+        input[type="password"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        button:hover { background: #00cc00; box-shadow: 0 0 15px #00ff00; }
+        .error {
+            color: #ff0000;
+            margin-top: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="loginForm">
+        <h1>🔐 RESTRICTED ACCESS</h1>
+        <input type="password" id="passwordInput" placeholder="••••••••" maxlength="20">
+        <br>
+        <button onclick="checkPassword()">ENTER</button>
+        <p class="error" id="errorMsg">Invalid password. Access denied.</p>
+    </div>
+
+    <script>
+        const CORRECT_PASSWORD = "dbeauty";
+        
+        function checkPassword() {
+            const input = document.getElementById("passwordInput").value;
+            if (input === CORRECT_PASSWORD) {
+                sessionStorage.setItem("authenticated", "true");
+                window.location.href = "dashboard.html";
+            } else {
+                document.getElementById("errorMsg").style.display = "block";
+                document.getElementById("passwordInput").value = "";
+                setTimeout(() => {
+                    document.getElementById("errorMsg").style.display = "none";
+                }, 3000);
+            }
+        }
+        
+        document.getElementById("passwordInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") checkPassword();
+        });
+    </script>
+</body>
+</html>
