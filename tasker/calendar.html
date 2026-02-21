@@ -1108,7 +1108,7 @@
             const isCompleted = task.status === 'done';
             
             let html = `<div class="task-card priority-${task.priority}${isOverdue ? ' overdue' : ''}${isCompleted ? ' completed' : ''}" draggable="true" data-task-id="${task.id}">`;
-            html += `<input type="checkbox" class="task-complete-toggle" ${isCompleted ? 'checked' : ''} onclick="toggleTaskComplete('${task.id}', this.checked)" title="Mark as ${isCompleted ? 'incomplete' : 'complete'}">`;
+            html += `<input type="checkbox" class="task-complete-toggle" ${isCompleted ? 'checked' : ''} onclick="event.stopPropagation(); toggleTaskComplete('${task.id}', this.checked);" title="Mark as ${isCompleted ? 'incomplete' : 'complete'}">`;
             html += `<div class="task-id">#${task.id}</div>`;
             html += `<div class="task-title">${escapeHtml(task.title)}</div>`;
             html += `<div class="task-meta">`;
@@ -1384,6 +1384,9 @@
 
         // Make task cards clickable
         document.addEventListener('click', function(e) {
+            // Don't open modal if clicking on checkbox
+            if (e.target.classList.contains('task-complete-toggle')) return;
+            
             const taskCard = e.target.closest('.task-card');
             if (taskCard) {
                 const taskId = taskCard.querySelector('.task-id').textContent.replace('#', '');
