@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-21T18:00:00Z",
+  "lastUpdated": "2026-02-21T19:10:55.937Z",
   "tasks": [
     {
       "id": "20",
@@ -14,7 +14,7 @@
       "title": "pagamenti Abhishek",
       "status": "todo",
       "priority": "high",
-      "due": "2026-02-16",
+      "due": "2026-02-22",
       "assignee": "FHG"
     },
     {
@@ -22,13 +22,13 @@
       "title": "visita cardiologica fissare",
       "status": "todo",
       "priority": "high",
-      "due": "2026-02-18",
+      "due": "2026-02-22",
       "assignee": "FHG"
     },
     {
       "id": "3",
       "title": "Khush aumento",
-      "status": "todo",
+      "status": "done",
       "priority": "medium",
       "due": null,
       "assignee": "FHG"
@@ -38,7 +38,7 @@
       "title": "Esami del sangue",
       "status": "todo",
       "priority": "medium",
-      "due": null,
+      "due": "2026-02-22",
       "assignee": "FHG"
     },
     {
@@ -46,7 +46,7 @@
       "title": "gestione pagamenti",
       "status": "todo",
       "priority": "medium",
-      "due": "2026-02-16",
+      "due": "2026-02-22",
       "assignee": "FHG"
     },
     {
@@ -62,8 +62,9 @@
       "title": "cattolica assicurazione",
       "status": "todo",
       "priority": "medium",
-      "due": "2026-02-19",
-      "assignee": "FHG"
+      "due": "2026-02-25",
+      "assignee": "FHG",
+      "notes": ""
     },
     {
       "id": "17",
