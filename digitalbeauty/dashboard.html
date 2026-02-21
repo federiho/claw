@@ -66,6 +66,17 @@
             gap: 8px;
         }
         .new-folder-btn:hover { background: #2d8a47; }
+        .back-btn {
+            background: transparent;
+            color: #8ab4f8;
+            border: 1px solid #8ab4f8;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: none;
+        }
+        .back-btn.visible { display: flex; }
         .drag-hint {
             color: #9aa0a6;
             font-size: 13px;
@@ -93,7 +104,8 @@
         .file-item:hover { background: #3c4043; }
         .file-item:last-child { border-bottom: none; }
         .file-item.dragging { opacity: 0.5; }
-        .file-item.drag-over { background: rgba(138, 180, 248, 0.2); }
+        .file-item.drag-over { background: rgba(138, 180, 248, 0.3); border: 2px dashed #8ab4f8; }
+        .file-item.hidden { display: none; }
         .file-icon {
             width: 24px;
             height: 24px;
@@ -115,6 +127,9 @@
         .folder-row {
             background: rgba(138, 180, 248, 0.05);
         }
+        .folder-row:hover {
+            background: rgba(138, 180, 248, 0.15);
+        }
         .folder-row.drag-over {
             background: rgba(138, 180, 248, 0.3);
             border: 2px dashed #8ab4f8;
@@ -124,6 +139,15 @@
         }
         .folder-row.readonly:hover {
             background: rgba(138, 180, 248, 0.05);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9aa0a6;
+        }
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
         }
         
         /* Modal */
@@ -188,65 +212,81 @@
 <body>
     <div class="header">
         <div class="header-left">
-            <h1>DigitalBeauty Pro — Document Management</h1>
+            <h1 id="pageTitle">DigitalBeauty Pro — Document Management</h1>
             <span class="user-badge" id="userBadge">Viewer</span>
         </div>
         <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 
     <div class="admin-toolbar" id="adminToolbar">
-        <button class="new-folder-btn" onclick="createNewFolder()">
+        <button class="back-btn" id="backBtn" onclick="goBack()">← Back</button>
+        <button class="new-folder-btn" id="newFolderBtn" onclick="createNewFolder()">
             <span>+</span> New Folder
         </button>
-        <span class="drag-hint">💡 Drag files to folders to organize</span>
+        <span class="drag-hint" id="dragHint">💡 Drag files to folders to organize</span>
     </div>
 
     <div class="container">
-        <div class="section-title">Folders</div>
-        <div class="file-list" id="folderList">
-            <div class="file-item folder-row" data-folder="strategy" draggable="false">
-                <div class="file-icon">📂</div>
-                <div class="file-name">Strategy Documents</div>
-                <div class="file-meta">6 items</div>
+        <!-- Folders View -->
+        <div id="foldersView">
+            <div class="section-title">Folders</div>
+            <div class="file-list" id="folderList">
+                <div class="file-item folder-row" data-folder="strategy" draggable="false">
+                    <div class="file-icon">📂</div>
+                    <div class="file-name">Strategy Documents</div>
+                    <div class="file-meta" id="count-strategy">6 items</div>
+                </div>
+                <div class="file-item folder-row" data-folder="market" draggable="false">
+                    <div class="file-icon">📂</div>
+                    <div class="file-name">Market Analysis</div>
+                    <div class="file-meta" id="count-market">6 items</div>
+                </div>
             </div>
-            <div class="file-item folder-row" data-folder="market" draggable="false">
-                <div class="file-icon">📂</div>
-                <div class="file-name">Market Analysis</div>
-                <div class="file-meta">6 items</div>
+
+            <div class="section-title">Files</div>
+            <div class="file-list" id="fileList">
+                <div class="file-item" data-file="creator-integration-strategy" data-folders="strategy" draggable="false">
+                    <div class="file-icon">📄</div>
+                    <div class="file-name">Creator Integration Strategy</div>
+                    <div class="file-meta">PDF • Feb 21, 2026</div>
+                </div>
+                <div class="file-item" data-file="ideal-customer-profile" data-folders="strategy" draggable="false">
+                    <div class="file-icon">📄</div>
+                    <div class="file-name">Ideal Customer Profile</div>
+                    <div class="file-meta">PDF • Feb 21, 2026</div>
+                </div>
+                <div class="file-item" data-file="north-star-metrics" data-folders="strategy" draggable="false">
+                    <div class="file-icon">📄</div>
+                    <div class="file-name">North Star Metrics</div>
+                    <div class="file-meta">PDF • Feb 21, 2026</div>
+                </div>
+                <div class="file-item" data-file="pmf-plan-30-days" data-folders="market" draggable="false">
+                    <div class="file-icon">📄</div>
+                    <div class="file-name">PMF Plan 30 Days</div>
+                    <div class="file-meta">PDF • Feb 21, 2026</div>
+                </div>
+                <div class="file-item" data-file="product-market-fit-analysis" data-folders="market" draggable="false">
+                    <div class="file-icon">📄</div>
+                    <div class="file-name">Product-Market-Fit Analysis</div>
+                    <div class="file-meta">PDF • Feb 21, 2026</div>
+                </div>
+                <div class="file-item" data-file="wedge-strategy" data-folders="strategy" draggable="false">
+                    <div class="file-icon">📄</div>
+                    <div class="file-name">Wedge Strategy</div>
+                    <div class="file-meta">PDF • Feb 21, 2026</div>
+                </div>
             </div>
         </div>
 
-        <div class="section-title">Files</div>
-        <div class="file-list" id="fileList">
-            <div class="file-item" data-file="creator-integration-strategy" draggable="false">
-                <div class="file-icon">📄</div>
-                <div class="file-name">Creator Integration Strategy</div>
-                <div class="file-meta">PDF • Feb 21, 2026</div>
+        <!-- Folder Contents View -->
+        <div id="folderContentsView" style="display: none;">
+            <div class="section-title" id="folderContentsTitle">Folder Contents</div>
+            <div class="file-list" id="folderContentsList">
+                <!-- Files will be inserted here dynamically -->
             </div>
-            <div class="file-item" data-file="ideal-customer-profile" draggable="false">
-                <div class="file-icon">📄</div>
-                <div class="file-name">Ideal Customer Profile</div>
-                <div class="file-meta">PDF • Feb 21, 2026</div>
-            </div>
-            <div class="file-item" data-file="north-star-metrics" draggable="false">
-                <div class="file-icon">📄</div>
-                <div class="file-name">North Star Metrics</div>
-                <div class="file-meta">PDF • Feb 21, 2026</div>
-            </div>
-            <div class="file-item" data-file="pmf-plan-30-days" draggable="false">
-                <div class="file-icon">📄</div>
-                <div class="file-name">PMF Plan 30 Days</div>
-                <div class="file-meta">PDF • Feb 21, 2026</div>
-            </div>
-            <div class="file-item" data-file="product-market-fit-analysis" draggable="false">
-                <div class="file-icon">📄</div>
-                <div class="file-name">Product-Market-Fit Analysis</div>
-                <div class="file-meta">PDF • Feb 21, 2026</div>
-            </div>
-            <div class="file-item" data-file="wedge-strategy" draggable="false">
-                <div class="file-icon">📄</div>
-                <div class="file-name">Wedge Strategy</div>
-                <div class="file-meta">PDF • Feb 21, 2026</div>
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-state-icon">📂</div>
+                <p>This folder is empty</p>
             </div>
         </div>
     </div>
@@ -272,6 +312,10 @@
         const userRole = sessionStorage.getItem("userRole") || "viewer";
         const userName = sessionStorage.getItem("userName") || "User";
         const isAdmin = userRole === "admin";
+        let currentFolder = null;
+
+        // Load folder assignments from session storage
+        let folderAssignments = JSON.parse(sessionStorage.getItem('folderAssignments') || '{}');
 
         // Update UI based on role
         document.getElementById("userBadge").textContent = userName;
@@ -281,29 +325,95 @@
             setupDragAndDrop();
         } else {
             document.getElementById("userBadge").classList.remove("admin");
-            // Make folders readonly for viewers
             document.querySelectorAll('.folder-row').forEach(folder => {
                 folder.classList.add('readonly');
             });
         }
 
-        // File click handlers
-        document.querySelectorAll('[data-file]').forEach(item => {
-            item.addEventListener('click', function() {
-                const file = this.getAttribute('data-file');
-                window.location.href = `docs/${file}.html`;
+        // Initialize folder counts
+        updateFolderCounts();
+
+        // Folder click handlers
+        document.querySelectorAll('[data-folder]').forEach(folder => {
+            folder.addEventListener('click', function() {
+                const folderName = this.getAttribute('data-folder');
+                openFolder(folderName);
             });
         });
 
-        // Folder click handlers
-        document.querySelectorAll('[data-folder]').forEach(item => {
-            item.addEventListener('click', function(e) {
-                if (!isAdmin || !this.classList.contains('drag-over')) {
-                    const folder = this.getAttribute('data-folder');
-                    alert(`Folder "${folder}" contents coming soon`);
+        function openFolder(folderName) {
+            currentFolder = folderName;
+            const folderNames = {
+                'strategy': 'Strategy Documents',
+                'market': 'Market Analysis'
+            };
+            
+            document.getElementById('foldersView').style.display = 'none';
+            document.getElementById('folderContentsView').style.display = 'block';
+            document.getElementById('folderContentsTitle').textContent = folderNames[folderName] || folderName;
+            document.getElementById('pageTitle').textContent = 'DigitalBeauty Pro — ' + (folderNames[folderName] || folderName);
+            
+            // Show back button
+            document.getElementById('backBtn').classList.add('visible');
+            
+            // Hide new folder button in folder view
+            if (isAdmin) {
+                document.getElementById('newFolderBtn').style.display = 'none';
+                document.getElementById('dragHint').textContent = '📁 You are viewing folder contents';
+            }
+            
+            // Load folder contents
+            loadFolderContents(folderName);
+        }
+
+        function goBack() {
+            currentFolder = null;
+            document.getElementById('foldersView').style.display = 'block';
+            document.getElementById('folderContentsView').style.display = 'none';
+            document.getElementById('pageTitle').textContent = 'DigitalBeauty Pro — Document Management';
+            document.getElementById('backBtn').classList.remove('visible');
+            
+            if (isAdmin) {
+                document.getElementById('newFolderBtn').style.display = 'flex';
+                document.getElementById('dragHint').textContent = '💡 Drag files to folders to organize';
+            }
+        }
+
+        function loadFolderContents(folderName) {
+            const contentsList = document.getElementById('folderContentsList');
+            const emptyState = document.getElementById('emptyState');
+            contentsList.innerHTML = '';
+            
+            // Get files assigned to this folder
+            const assignedFiles = Object.entries(folderAssignments)
+                .filter(([file, folder]) => folder === folderName)
+                .map(([file, folder]) => file);
+            
+            // Also get files with default folder attribute
+            document.querySelectorAll('[data-file]').forEach(fileEl => {
+                const fileName = fileEl.getAttribute('data-file');
+                const defaultFolders = fileEl.getAttribute('data-folders');
+                
+                // If file is assigned to this folder or has it as default
+                if (assignedFiles.includes(fileName) || (defaultFolders && defaultFolders.includes(folderName))) {
+                    // Clone the file element
+                    const clone = fileEl.cloneNode(true);
+                    clone.draggable = false;
+                    clone.onclick = function() {
+                        window.location.href = `docs/${fileName}.html`;
+                    };
+                    contentsList.appendChild(clone);
                 }
             });
-        });
+            
+            if (contentsList.children.length === 0) {
+                emptyState.style.display = 'block';
+                contentsList.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                contentsList.style.display = 'block';
+            }
+        }
 
         function logout() {
             sessionStorage.removeItem("authenticated");
@@ -359,14 +469,54 @@
             const fileElement = document.querySelector(`[data-file="${fileName}"]`);
             const fileTitle = fileElement.querySelector('.file-name').textContent;
             
-            // In a real app, this would update the database
-            // For now, just show feedback
-            alert(`Moved "${fileTitle}" to folder "${folderName}"`);
+            // Store assignment in session storage
+            folderAssignments[fileName] = folderName;
+            sessionStorage.setItem('folderAssignments', JSON.stringify(folderAssignments));
             
-            // Update the folder count (visual only)
-            const meta = this.querySelector('.file-meta');
-            const currentCount = parseInt(meta.textContent);
-            meta.textContent = `${currentCount + 1} items`;
+            // Hide the file from root view
+            fileElement.classList.add('hidden');
+            
+            // Update folder count
+            updateFolderCounts();
+            
+            // Show feedback
+            const folderNames = {
+                'strategy': 'Strategy Documents',
+                'market': 'Market Analysis'
+            };
+            alert(`Moved "${fileTitle}" to "${folderNames[folderName] || folderName}"`);
+        }
+
+        function updateFolderCounts() {
+            // Count files in each folder
+            const counts = {};
+            
+            // Count from assignments
+            Object.values(folderAssignments).forEach(folder => {
+                counts[folder] = (counts[folder] || 0) + 1;
+            });
+            
+            // Count from default attributes for files not yet moved
+            document.querySelectorAll('[data-file]:not(.hidden)').forEach(file => {
+                const defaultFolders = file.getAttribute('data-folders');
+                if (defaultFolders) {
+                    defaultFolders.split(',').forEach(folder => {
+                        // Only count if not already assigned elsewhere
+                        const fileName = file.getAttribute('data-file');
+                        if (!folderAssignments[fileName]) {
+                            counts[folder.trim()] = (counts[folder.trim()] || 0) + 1;
+                        }
+                    });
+                }
+            });
+            
+            // Update UI
+            if (document.getElementById('count-strategy')) {
+                document.getElementById('count-strategy').textContent = `${counts['strategy'] || 0} items`;
+            }
+            if (document.getElementById('count-market')) {
+                document.getElementById('count-market').textContent = `${counts['market'] || 0} items`;
+            }
         }
 
         function createNewFolder() {
@@ -382,21 +532,20 @@
         function confirmNewFolder() {
             const folderName = document.getElementById('folderNameInput').value.trim();
             if (folderName) {
-                // In a real app, this would create the folder in the database
-                // For now, just add it to the UI
+                const folderId = folderName.toLowerCase().replace(/\s+/g, '-');
                 const folderList = document.getElementById('folderList');
                 const newFolder = document.createElement('div');
                 newFolder.className = 'file-item folder-row';
-                newFolder.setAttribute('data-folder', folderName.toLowerCase().replace(/\s+/g, '-'));
+                newFolder.setAttribute('data-folder', folderId);
                 newFolder.innerHTML = `
                     <div class="file-icon">📂</div>
                     <div class="file-name">${folderName}</div>
-                    <div class="file-meta">0 items</div>
+                    <div class="file-meta" id="count-${folderId}">0 items</div>
                 `;
                 
                 // Add event listeners
                 newFolder.addEventListener('click', function() {
-                    alert(`Folder "${folderName}" contents coming soon`);
+                    openFolder(folderId);
                 });
                 newFolder.addEventListener('dragover', handleDragOver);
                 newFolder.addEventListener('dragleave', handleDragLeave);
