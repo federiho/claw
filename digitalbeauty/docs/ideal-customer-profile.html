@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigitalBeauty Pro — Ideal Customer Profile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #1a1a1a;
+            color: #e8eaed;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            padding: 40px;
+            border-radius: 8px;
+        }
+        .back-link {
+            color: #8ab4f8;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1 {
+            color: #fff;
+            font-size: 28px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #8ab4f8;
+            padding-bottom: 15px;
+        }
+        .subtitle {
+            color: #9aa0a6;
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+        h2 {
+            color: #8ab4f8;
+            font-size: 22px;
+            margin-top: 50px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            color: #fff;
+            font-size: 18px;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            border-left: 4px solid #8ab4f8;
+            padding-left: 15px;
+        }
+        h4 {
+            color: #bdc1c6;
+            font-size: 14px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        p {
+            margin-bottom: 15px;
+            color: #e8eaed;
+        }
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .icp-card {
+            background: rgba(138, 180, 248, 0.05);
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .icp-card h3 {
+            border-left: none;
+            padding-left: 0;
+            margin-top: 0;
+            color: #8ab4f8;
+        }
+        .tag {
+            display: inline-block;
+            background: rgba(138, 180, 248, 0.2);
+            color: #8ab4f8;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .tag-high {
+            background: rgba(52, 168, 83, 0.2);
+            color: #34a853;
+        }
+        .tag-medium {
+            background: rgba(251, 188, 5, 0.2);
+            color: #fbbc05;
+        }
+        .tag-low {
+            background: rgba(234, 67, 53, 0.2);
+            color: #ea4335;
+        }
+        .pricing {
+            font-size: 20px;
+            color: #34a853;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+        .recommendation {
+            background: rgba(52, 168, 83, 0.1);
+            border-left: 4px solid #34a853;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+        .recommendation h3 {
+            color: #34a853;
+            margin-top: 0;
+        }
+        .warning-box {
+            background: rgba(251, 188, 5, 0.1);
+            border-left: 4px solid #fbbc05;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .divider {
+            height: 1px;
+            background: #3c4043;
+            margin: 40px 0;
+        }
+        .priority-list {
+            counter-reset: priority;
+        }
+        .priority-list li {
+            list-style: none;
+            position: relative;
+            padding-left: 40px;
+        }
+        .priority-list li::before {
+            counter-increment: priority;
+            content: counter(priority);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 28px;
+            height: 28px;
+            background: #8ab4f8;
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .check-item::before {
+            content: "✓";
+            color: #34a853;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../dashboard.html" class="back-link">← Back to Documents</a>
+        
+        <h1>DigitalBeauty Pro — Ideal Customer Profile</h1>
+        <div class="subtitle">Strategic Targeting & Positioning Document</div>
+
+        <h2>1) ICP × Job-to-be-Done Matrix</h2>
+        <p>Not all users who find the product interesting will pay. You need to identify who has:</p>
+        <ul>
+            <li class="check-item">frequent pain,</li>
+            <li class="check-item">budget,</li>
+            <li class="check-item">and decision-making authority.</li>
+        </ul>
+        <p>Below is the real map, based on how these teams work today.</p>
+
+        <div class="icp-card">
+            <h3>ICP 1 — Social Media Manager (fashion / beauty / luxury brands)</h3>
+            <span class="tag tag-high">CONVERSION: HIGHEST</span>
+            <div class="pricing">$39–$99/month per seat</div>
+            
+            <h4>Job-to-be-Done</h4>
+            <p>Wants to answer:</p>
+            <ul>
+                <li>what are other brands doing right now</li>
+                <li>what's working</li>
+                <li>what should we do next week</li>
+            </ul>
+            <p><strong>Not in 3 months. Now.</strong></p>
+            
+            <h4>How they work today</h4>
+            <p>Real method:</p>
+            <ul>
+                <li>follows 50–200 accounts manually</li>
+                <li>saves posts on Instagram</li>
+                <li>uses Notion / screenshots / Slack</li>
+                <li>produces manual reports</li>
+            </ul>
+            <p><strong>Hidden cost:</strong> 5–10 hours/week.</p>
+            
+            <h4>Why DigitalBeauty is better</h4>
+            <p><strong>Signals + Explore replaces:</strong></p>
+            <ul>
+                <li>manual scrolling</li>
+                <li>manual collection</li>
+                <li>initial interpretation</li>
+            </ul>
+            <p><strong>Agents replaces:</strong></p>
+            <ul>
+                <li>weekly reports</li>
+                <li>benchmark analysis</li>
+            </ul>
+            <p style="color: #34a853; font-weight: 600; margin-top: 20px;">→ This ICP is your best initial wedge</p>
+        </div>
+
+        <div class="icp-card">
+            <h3>ICP 2 — Creative Director / Art Director</h3>
+            <span class="tag tag-high">CONVERSION: HIGH</span>
+            <div class="pricing">$99–$300/month</div>
+            
+            <h4>Job-to-be-Done</h4>
+            <p>Wants to know:</p>
+            <ul>
+                <li>how is the aesthetic language evolving</li>
+                <li>what's becoming cliché</li>
+                <li>what's emerging</li>
+            </ul>
+            <p>Not looking for data. Looking for creative advantage.</p>
+            
+            <h4>Why this ICP is powerful</h4>
+            <p>They are trend-sensitive and have strong continuous need. And most importantly, they influence high-value decisions.</p>
+        </div>
+
+        <div class="icp-card">
+            <h3>ICP 3 — Founder / CMO of Challenger Brands</h3>
+            <span class="tag tag-high">CONVERSION: HIGHEST</span>
+            <p style="color: #8ab4f8; font-weight: 600; margin-top: 15px;">This ICP is underestimated.</p>
+            
+            <p>Founders of DTC / emerging brands:</p>
+            <ul>
+                <li>need intelligence</li>
+                <li>don't have large teams</li>
+                <li>make decisions directly</li>
+            </ul>
+            <p><strong>DigitalBeauty becomes:</strong> their competitive radar</p>
+            <p style="color: #34a853; font-weight: 600; margin-top: 15px;">→ This ICP can become one of the most profitable.</p>
+        </div>
+
+        <div class="icp-card">
+            <h3>ICP 4 — Agencies (social, creative, branding)</h3>
+            <span class="tag tag-high">CONVERSION: EXTREMELY HIGH</span>
+            <div class="pricing">$200–$1000+/month</div>
+            
+            <h4>Why</h4>
+            <p>They use the product for:</p>
+            <ul>
+                <li>many clients</li>
+                <li>many brands</li>
+                <li>daily use</li>
+            </ul>
+            <p style="color: #34a853; font-weight: 600; margin-top: 15px;">→ This ICP is often the most profitable in SaaS intelligence.</p>
+        </div>
+
+        <div class="icp-card">
+            <h3>ICP 5 — Enterprise Brands</h3>
+            <span class="tag tag-medium">CONVERSION: MEDIUM</span>
+            <div class="pricing">$5k–$50k/year</div>
+            
+            <h4>Reality</h4>
+            <p>Slower sales. But very high ACV.</p>
+            <p><strong>This is a next step, not initial.</strong></p>
+        </div>
+
+        <div class="recommendation">
+            <h3>ICP PRIORITY ORDER (Recommended)</h3>
+            <p><strong>Launch order:</strong></p>
+            <ol class="priority-list">
+                <li>Social media managers (challenger brands)</li>
+                <li>Agencies</li>
+                <li>Creative directors</li>
+                <li>Founder brands</li>
+                <li>Enterprise</li>
+            </ol>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>2) The 3 Possible Strategic Positionings (Choose One)</h2>
+        <p style="color: #fbbc05; font-weight: 600; margin-bottom: 20px;">This is the most critical point. Success depends more on positioning than product.</p>
+
+        <div class="icp-card">
+            <h3>POSITIONING A — Social Intelligence Platform</h3>
+            <p style="font-style: italic; color: #bdc1c6;">"Monitor what brands are doing"</p>
+            
+            <h4>PROS</h4>
+            <ul>
+                <li>easy to understand</li>
+            </ul>
+            
+            <h4>CONS</h4>
+            <ul>
+                <li>saturated market</li>
+                <li>competition with:
+                    <ul>
+                        <li>Brandwatch</li>
+                        <li>Meltwater</li>
+                        <li>Dash Hudson</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <p style="color: #ea4335; font-weight: 600;">→ NOT recommended as primary positioning.</p>
+        </div>
+
+        <div class="icp-card" style="border: 2px solid #34a853; background: rgba(52, 168, 83, 0.05);">
+            <h3 style="color: #34a853;">POSITIONING B — Creative Intelligence Platform ⭐ RECOMMENDED</h3>
+            <p style="font-style: italic; color: #bdc1c6;">"Understand how aesthetic communication is evolving"</p>
+            
+            <h4>PROS</h4>
+            <ul>
+                <li>much more differentiated</li>
+                <li>much weaker competition</li>
+                <li>aligned with your DNA</li>
+            </ul>
+            
+            <p style="color: #34a853; font-weight: 600; font-size: 18px; margin-top: 20px;">→ THIS is the best initial positioning.</p>
+        </div>
+
+        <div class="icp-card">
+            <h3>POSITIONING C — Agentic Intelligence Platform</h3>
+            <p style="font-style: italic; color: #bdc1c6;">"Agents that analyze and act on creative data"</p>
+            
+            <h4>PROS</h4>
+            <ul>
+                <li>huge future potential</li>
+            </ul>
+            
+            <h4>CONS</h4>
+            <ul>
+                <li>today too new to be primary positioning</li>
+            </ul>
+            
+            <p><strong>Must be phase two, not phase one.</strong></p>
+        </div>
+
+        <div class="recommendation">
+            <h3>CLEAR RECOMMENDATION</h3>
+            <p><strong>Primary positioning:</strong> Creative Intelligence Platform</p>
+            <p><strong>Secondary positioning:</strong> Agentic Creative Intelligence Platform</p>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        if (sessionStorage.getItem("authenticated") !== "true") {
+            window.location.href = "../index.html";
+        }
+    </script>
+</body>
+</html>
