@@ -601,6 +601,50 @@
             cursor: pointer;
         }
 
+        .btn-reset {
+            background: transparent;
+            border: none;
+            color: #ff5252;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 82, 82, 0.1);
+        }
+
+        .save-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Drag & Drop styles */
+        .task-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .day-column.drag-over {
+            background: rgba(79, 172, 254, 0.1);
+            border: 2px dashed #4facfe;
+        }
+
+        .day-column {
+            cursor: pointer;
+        }
+
+        .day-header {
+            cursor: pointer;
+        }
+
+        .day-column:hover .day-header {
+            background: #3a3a3a;
+        }
+
         .json-export {
             width: 100%;
             height: 200px;
@@ -644,7 +688,10 @@
                     <button class="nav-btn" onclick="changeWeek(1)">→</button>
                 </div>
                 <div class="header-actions">
-                    <button id="saveChangesBtn" class="save-btn" onclick="showSaveModal()" style="display:none;">💾 Save Changes</button>
+                    <div class="save-actions" id="saveActions" style="display:none;">
+                        <button id="saveChangesBtn" class="save-btn" onclick="showSaveModal()">💾 Save Changes</button>
+                        <button class="btn-reset" onclick="resetChanges()">Reset</button>
+                    </div>
                     <button class="add-btn" onclick="showCreateModal()">+ New Task</button>
                     <div class="today-date">
                         Today: <span id="todayDisplay"></span>
@@ -885,10 +932,20 @@
 
         function updatePendingChangesUI() {
             const count = pendingChanges.length;
-            const btn = document.getElementById('saveChangesBtn');
-            if (btn) {
-                btn.textContent = count > 0 ? `💾 Save Changes (${count})` : '💾 Save Changes';
-                btn.style.display = count > 0 ? 'block' : 'none';
+            const actions = document.getElementById('saveActions');
+            if (actions) {
+                actions.style.display = count > 0 ? 'flex' : 'none';
+                const btn = document.getElementById('saveChangesBtn');
+                if (btn) btn.textContent = `💾 Save Changes (${count})`;
+            }
+        }
+
+        function resetChanges() {
+            if (confirm('Are you sure you want to reset all changes? This cannot be undone.')) {
+                pendingChanges = [];
+                localStorage.removeItem('pendingChanges');
+                updatePendingChangesUI();
+                loadTasks(); // Reload original data
             }
         }
 
@@ -1001,7 +1058,7 @@
             const dueDate = task.due ? new Date(task.due) : null;
             const isOverdue = dueDate && isPast(dueDate) && !isToday(dueDate);
             
-            let html = `<div class="task-card priority-${task.priority}${isOverdue ? ' overdue' : ''}">`;
+            let html = `<div class="task-card priority-${task.priority}${isOverdue ? ' overdue' : ''}" draggable="true" data-task-id="${task.id}">`;
             html += `<div class="task-id">#${task.id}</div>`;
             html += `<div class="task-title">${escapeHtml(task.title)}</div>`;
             html += `<div class="task-meta">`;
@@ -1060,9 +1117,20 @@
             weekDays.forEach(day => {
                 const dayTasks = sortTasks(getTasksForDate(day));
                 const isTodayFlag = isToday(day);
+                const dateStr = getDateString(day);
 
-                let html = `<div class="day-column${isTodayFlag ? ' today' : ''}">`;
-                html += `<div class="day-header${isTodayFlag ? ' today' : ''}">`;
+                const dayColumn = document.createElement('div');
+                dayColumn.className = `day-column${isTodayFlag ? ' today' : ''}`;
+                dayColumn.setAttribute('data-date', dateStr);
+                
+                // Click on column to create task
+                dayColumn.addEventListener('click', function(e) {
+                    if (e.target === dayColumn || e.target.classList.contains('tasks-container') || e.target.classList.contains('no-tasks')) {
+                        showCreateModal(dateStr);
+                    }
+                });
+
+                let html = `<div class="day-header${isTodayFlag ? ' today' : ''}" data-date="${dateStr}">`;
                 html += `<div class="day-name">${getDayName(day)}</div>`;
                 html += `<div class="day-date${isTodayFlag ? ' today' : ''}">${day.getDate()}</div>`;
                 html += `</div>`;
@@ -1076,12 +1144,72 @@
                     });
                 }
 
-                html += `</div></div>`;
-
-                const div = document.createElement('div');
-                div.innerHTML = html;
-                calendar.appendChild(div.firstElementChild);
+                html += `</div>`;
+                dayColumn.innerHTML = html;
+                
+                // Click on header to create task
+                const header = dayColumn.querySelector('.day-header');
+                header.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    showCreateModal(dateStr);
+                });
+                
+                calendar.appendChild(dayColumn);
             });
+            
+            // Setup drag & drop
+            setupDragAndDrop();
+        }
+        
+        function setupDragAndDrop() {
+            const taskCards = document.querySelectorAll('.task-card');
+            const dayColumns = document.querySelectorAll('.day-column');
+            
+            taskCards.forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+            });
+            
+            dayColumns.forEach(column => {
+                column.addEventListener('dragover', handleDragOver);
+                column.addEventListener('dragleave', handleDragLeave);
+                column.addEventListener('drop', handleDrop);
+            });
+        }
+        
+        let draggedTaskId = null;
+        
+        function handleDragStart(e) {
+            draggedTaskId = this.getAttribute('data-task-id');
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            draggedTaskId = null;
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            this.classList.add('drag-over');
+        }
+        
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            
+            if (!draggedTaskId) return;
+            
+            const newDate = this.getAttribute('data-date');
+            if (newDate) {
+                addPendingChange('move', { id: draggedTaskId, due: newDate });
+            }
         }
 
         /**
@@ -1120,9 +1248,9 @@
         }
 
         // Modal Functions
-        function showCreateModal() {
+        function showCreateModal(preselectedDate) {
             document.getElementById('createModal').style.display = 'flex';
-            document.getElementById('newTaskDate').value = getDateString(new Date());
+            document.getElementById('newTaskDate').value = preselectedDate || getDateString(new Date());
         }
 
         function closeCreateModal() {
