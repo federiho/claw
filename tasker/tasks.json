@@ -1,36 +1,92 @@
 {
-  "lastUpdated": "2026-02-21T17:55:00Z",
+  "lastUpdated": "2026-02-21T18:06:00Z",
   "tasks": [
     {
-      "id": "50",
-      "title": "TEST SYNC - Task aggiornata ora",
-      "status": "todo",
-      "priority": "high",
-      "due": "2026-02-21",
-      "assignee": "FHG"
-    },
-    {
-      "id": "49",
-      "title": "Task per domani",
-      "status": "todo",
-      "priority": "medium",
-      "due": "2026-02-22",
-      "assignee": "FHG"
-    },
-    {
-      "id": "48",
-      "title": "Task senza data - rolling",
+      "id": "20",
+      "title": "pagare Koushik prima",
       "status": "todo",
       "priority": "high",
       "due": null,
       "assignee": "FHG"
     },
     {
-      "id": "47",
-      "title": "OVERDUE - Task scaduta",
+      "id": "11",
+      "title": "pagamenti Abhishek",
       "status": "todo",
       "priority": "high",
-      "due": "2026-02-20",
+      "due": "2026-02-16",
+      "assignee": "FHG"
+    },
+    {
+      "id": "18",
+      "title": "visita cardiologica fissare",
+      "status": "todo",
+      "priority": "high",
+      "due": "2026-02-18",
+      "assignee": "FHG"
+    },
+    {
+      "id": "3",
+      "title": "Khush aumento",
+      "status": "todo",
+      "priority": "medium",
+      "due": null,
+      "assignee": "FHG"
+    },
+    {
+      "id": "4",
+      "title": "Esami del sangue",
+      "status": "todo",
+      "priority": "medium",
+      "due": null,
+      "assignee": "FHG"
+    },
+    {
+      "id": "8",
+      "title": "gestione pagamenti",
+      "status": "todo",
+      "priority": "medium",
+      "due": "2026-02-16",
+      "assignee": "FHG"
+    },
+    {
+      "id": "9",
+      "title": "revisione auto",
+      "status": "todo",
+      "priority": "medium",
+      "due": "2026-02-17",
+      "assignee": "FHG"
+    },
+    {
+      "id": "6",
+      "title": "cattolica assicurazione",
+      "status": "todo",
+      "priority": "medium",
+      "due": "2026-02-19",
+      "assignee": "FHG"
+    },
+    {
+      "id": "17",
+      "title": "garage via olgiati",
+      "status": "todo",
+      "priority": "medium",
+      "due": "2026-02-22",
+      "assignee": "FHG"
+    },
+    {
+      "id": "19",
+      "title": "contratto lavera",
+      "status": "todo",
+      "priority": "medium",
+      "due": "2026-02-23",
+      "assignee": "FHG"
+    },
+    {
+      "id": "21",
+      "title": "Checkout registrazione domini (figmentalabs.com, digitalbeauty.ai, digitalbeauty.it.com) - €149.67",
+      "status": "todo",
+      "priority": "medium",
+      "due": "2026-02-28",
       "assignee": "FHG"
     }
   ]
