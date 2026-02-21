@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager - Calendar View</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .week-info {
+            font-size: 14px;
+            color: #a0a0a0;
+        }
+
+        .today-date {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4facfe;
+            padding: 8px 16px;
+            background-color: rgba(79, 172, 254, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid #4facfe;
+        }
+
+        .sync-status {
+            font-size: 12px;
+            color: #808080;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .day-column {
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 600px;
+            border: 1px solid #3d3d3d;
+            transition: border-color 0.3s ease;
+        }
+
+        .day-column.today {
+            border-color: #4facfe;
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.15);
+        }
+
+        .day-header {
+            background-color: #252525;
+            padding: 16px 12px;
+            border-bottom: 1px solid #3d3d3d;
+            text-align: center;
+        }
+
+        .day-header.today {
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.2), rgba(79, 172, 254, 0.05));
+            border-bottom-color: #4facfe;
+        }
+
+        .day-name {
+            font-size: 12px;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .day-date {
+            font-size: 24px;
+            font-weight: 700;
+            color: #e0e0e0;
+        }
+
+        .day-date.today {
+            color: #4facfe;
+        }
+
+        .tasks-container {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .task-card {
+            background-color: #383838;
+            border-left: 4px solid #666;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .task-card:hover {
+            background-color: #404040;
+            transform: translateX(4px);
+        }
+
+        .task-card.priority-high {
+            border-left-color: #ff5252;
+        }
+
+        .task-card.priority-medium {
+            border-left-color: #ffa726;
+        }
+
+        .task-card.priority-low {
+            border-left-color: #66bb6a;
+        }
+
+        .task-card.overdue {
+            background-color: rgba(255, 82, 82, 0.1);
+            border-color: #ff5252;
+            border-left-color: #ff5252;
+            box-shadow: 0 0 10px rgba(255, 82, 82, 0.2);
+        }
+
+        .task-id {
+            font-size: 11px;
+            color: #808080;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .task-title {
+            font-weight: 500;
+            color: #e0e0e0;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        .task-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        .task-priority {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .task-priority.high {
+            background-color: rgba(255, 82, 82, 0.2);
+            color: #ff5252;
+        }
+
+        .task-priority.medium {
+            background-color: rgba(255, 167, 38, 0.2);
+            color: #ffa726;
+        }
+
+        .task-priority.low {
+            background-color: rgba(102, 187, 106, 0.2);
+            color: #66bb6a;
+        }
+
+        .task-due {
+            color: #a0a0a0;
+            font-size: 10px;
+        }
+
+        .task-due.overdue {
+            color: #ff5252;
+            font-weight: 600;
+        }
+
+        .no-tasks {
+            color: #606060;
+            text-align: center;
+            padding: 20px 10px;
+            font-size: 12px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Scrollbar styling */
+        .tasks-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .tasks-container::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+
+        .tasks-container::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 3px;
+        }
+
+        .tasks-container::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .calendar {
+                gap: 8px;
+            }
+
+            .day-column {
+                min-height: 500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .calendar {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+            }
+
+            .day-column {
+                min-height: 400px;
+            }
+
+            .day-header {
+                padding: 12px 8px;
+            }
+
+            .day-date {
+                font-size: 20px;
+            }
+
+            .day-name {
+                font-size: 10px;
+            }
+
+            .tasks-container {
+                padding: 8px;
+                gap: 8px;
+            }
+
+            .task-card {
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calendar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .day-column {
+                min-height: 350px;
+            }
+
+            .header-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .today-date {
+                width: 100%;
+            }
+        }
+
+        .error-message {
+            background-color: rgba(255, 82, 82, 0.1);
+            border: 1px solid #ff5252;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: #ff5252;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Task Calendar</h1>
+            <div class="header-info">
+                <div>
+                    <div class="week-info">
+                        Week of <span id="weekStart"></span> - <span id="weekEnd"></span>
+                    </div>
+                </div>
+                <div class="today-date">
+                    Today: <span id="todayDisplay"></span>
+                </div>
+                <div class="sync-status">
+                    <div class="sync-dot"></div>
+                    <span>Live sync: <span id="syncTime">just now</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="errorContainer"></div>
+
+        <div class="calendar" id="calendar"></div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            tasksPath: '/tmp/tasks.json',
+            syncInterval: 30000, // 30 seconds
+            firstDayOfWeek: 1 // 0 = Sunday, 1 = Monday
+        };
+
+        // State
+        let tasks = [];
+        let lastSyncTime = new Date();
+
+        /**
+         * Get ISO date string for a date
+         */
+        function getDateString(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        /**
+         * Format date for display
+         */
+        function formatDate(date) {
+            return date.toLocaleDateString('it-IT', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        /**
+         * Get the start of the week
+         */
+        function getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (CONFIG.firstDayOfWeek === 0 ? 0 : 1);
+            return new Date(d.setDate(diff));
+        }
+
+        /**
+         * Get array of 7 days starting from week start
+         */
+        function getWeekDays(startDate) {
+            const days = [];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(startDate);
+                d.setDate(d.getDate() + i);
+                days.push(d);
+            }
+            return days;
+        }
+
+        /**
+         * Check if a date is today
+         */
+        function isToday(date) {
+            const today = new Date();
+            return date.getFullYear() === today.getFullYear() &&
+                   date.getMonth() === today.getMonth() &&
+                   date.getDate() === today.getDate();
+        }
+
+        /**
+         * Check if a date is in the past
+         */
+        function isPast(date) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return date < today;
+        }
+
+        /**
+         * Load tasks from JSON file (fallback to sample data if not available)
+         */
+        async function loadTasks() {
+            try {
+                const response = await fetch(CONFIG.tasksPath);
+                if (!response.ok) throw new Error('File not found');
+                const data = await response.json();
+                tasks = data.tasks || [];
+            } catch (error) {
+                // Fallback: Use sample data
+                tasks = [
+                    { id: "42", title: "Review doc", due: getDateString(new Date()), priority: "high", status: "todo" },
+                    { id: "43", title: "Call client", due: null, priority: "medium", status: "todo" },
+                    { id: "44", title: "Meeting prep", due: getDateString(new Date(new Date().getTime() + 86400000)), priority: "high", status: "todo" },
+                    { id: "45", title: "Check emails", due: null, priority: "low", status: "todo" },
+                    { id: "46", title: "Update spreadsheet", due: getDateString(new Date(new Date().getTime() + 172800000)), priority: "medium", status: "todo" }
+                ];
+                showError(`Could not load ${CONFIG.tasksPath}. Using sample data.`);
+            }
+            updateLastSyncTime();
+        }
+
+        /**
+         * Show error message
+         */
+        function showError(message) {
+            const container = document.getElementById('errorContainer');
+            container.innerHTML = `<div class="error-message">⚠️ ${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        /**
+         * Get tasks for a specific date
+         */
+        function getTasksForDate(date) {
+            const dateStr = getDateString(date);
+            const today = new Date();
+            const todayStr = getDateString(today);
+
+            return tasks.filter(task => {
+                // Tasks without due date go to today
+                if (task.due === null || task.due === undefined) {
+                    return dateStr === todayStr;
+                }
+                // Tasks with due date match that date
+                return task.due === dateStr;
+            });
+        }
+
+        /**
+         * Sort tasks by priority
+         */
+        function sortTasks(taskList) {
+            const priorityOrder = { high: 0, medium: 1, low: 2 };
+            return taskList.sort((a, b) => {
+                return (priorityOrder[a.priority] || 3) - (priorityOrder[b.priority] || 3);
+            });
+        }
+
+        /**
+         * Create a task card HTML
+         */
+        function createTaskCard(task) {
+            const dueDate = task.due ? new Date(task.due) : null;
+            const isOverdue = dueDate && isPast(dueDate) && !isToday(dueDate);
+            
+            let html = `<div class="task-card priority-${task.priority}${isOverdue ? ' overdue' : ''}">`;
+            html += `<div class="task-id">#${task.id}</div>`;
+            html += `<div class="task-title">${escapeHtml(task.title)}</div>`;
+            html += `<div class="task-meta">`;
+            html += `<span class="task-priority ${task.priority}">${task.priority}</span>`;
+            
+            if (isOverdue) {
+                html += `<span class="task-due overdue">OVERDUE</span>`;
+            } else if (dueDate) {
+                html += `<span class="task-due">${dueDate.toLocaleDateString('it-IT', { month: 'short', day: 'numeric' })}</span>`;
+            }
+            
+            html += `</div></div>`;
+            return html;
+        }
+
+        /**
+         * Escape HTML special characters
+         */
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        /**
+         * Get day name
+         */
+        function getDayName(date) {
+            return date.toLocaleDateString('it-IT', { weekday: 'short' }).toUpperCase();
+        }
+
+        /**
+         * Render the calendar
+         */
+        function renderCalendar() {
+            const today = new Date();
+            const weekStart = getWeekStart(today);
+            const weekDays = getWeekDays(weekStart);
+
+            // Update header
+            document.getElementById('weekStart').textContent = weekStart.toLocaleDateString('it-IT', { month: 'short', day: 'numeric' });
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            document.getElementById('weekEnd').textContent = weekEnd.toLocaleDateString('it-IT', { month: 'short', day: 'numeric' });
+            document.getElementById('todayDisplay').textContent = formatDate(today);
+
+            // Render calendar
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+
+            weekDays.forEach(day => {
+                const dayTasks = sortTasks(getTasksForDate(day));
+                const isTodayFlag = isToday(day);
+
+                let html = `<div class="day-column${isTodayFlag ? ' today' : ''}">`;
+                html += `<div class="day-header${isTodayFlag ? ' today' : ''}">`;
+                html += `<div class="day-name">${getDayName(day)}</div>`;
+                html += `<div class="day-date${isTodayFlag ? ' today' : ''}">${day.getDate()}</div>`;
+                html += `</div>`;
+                html += `<div class="tasks-container">`;
+
+                if (dayTasks.length === 0) {
+                    html += `<div class="no-tasks">No tasks</div>`;
+                } else {
+                    dayTasks.forEach(task => {
+                        html += createTaskCard(task);
+                    });
+                }
+
+                html += `</div></div>`;
+
+                const div = document.createElement('div');
+                div.innerHTML = html;
+                calendar.appendChild(div.firstElementChild);
+            });
+        }
+
+        /**
+         * Update the last sync time display
+         */
+        function updateLastSyncTime() {
+            const now = new Date();
+            const seconds = Math.floor((now - lastSyncTime) / 1000);
+            
+            let timeText = 'just now';
+            if (seconds >= 60) {
+                timeText = `${Math.floor(seconds / 60)}m ago`;
+            } else if (seconds > 0) {
+                timeText = `${seconds}s ago`;
+            }
+            
+            document.getElementById('syncTime').textContent = timeText;
+            lastSyncTime = now;
+        }
+
+        /**
+         * Initialize the app
+         */
+        async function init() {
+            await loadTasks();
+            renderCalendar();
+
+            // Set up periodic sync
+            setInterval(async () => {
+                await loadTasks();
+                renderCalendar();
+            }, CONFIG.syncInterval);
+
+            // Update time display
+            setInterval(updateLastSyncTime, 5000);
+        }
+
+        // Start the app when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>
