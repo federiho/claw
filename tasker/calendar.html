@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager - Calendar View</title>
+    <title>Task Calendar - Advanced</title>
     <style>
         * {
             margin: 0;
@@ -13,633 +13,1079 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: #1a1a1a;
-            color: #e0e0e0;
-            padding: clamp(12px, 2vw, 30px);
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
             min-height: 100vh;
         }
 
-        .container {
-            width: 100%;
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .header {
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: clamp(24px, 2vw, 42px);
-            margin-bottom: 10px;
-            color: #ffffff;
-        }
-
-        .header-info {
+        /* ===== HEADER ===== */
+        header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 1.5rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
-        .week-info {
-            font-size: clamp(12px, 1vw, 18px);
-            color: #a0a0a0;
-        }
-
-        .today-date {
-            font-size: clamp(14px, 1.2vw, 24px);
-            font-weight: 600;
-            color: #4facfe;
-            padding: clamp(6px, 0.8vw, 12px) clamp(12px, 1.5vw, 24px);
-            background-color: rgba(79, 172, 254, 0.1);
-            border-radius: 6px;
-            border-left: 3px solid #4facfe;
-        }
-
-        .sync-status {
-            font-size: 12px;
-            color: #808080;
+        .header-left {
             display: flex;
             align-items: center;
-            gap: 6px;
-        }
-
-        .sync-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #4caf50;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: clamp(8px, 1vw, 16px);
-            margin-bottom: 20px;
-            width: 100%;
-        }
-
-        .day-column {
-            background-color: #2d2d2d;
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: clamp(400px, 60vh, 800px);
-            border: 1px solid #3d3d3d;
-            transition: border-color 0.3s ease;
-        }
-
-        .day-column.today {
-            border-color: #4facfe;
-            box-shadow: 0 0 20px rgba(79, 172, 254, 0.15);
-        }
-
-        .day-header {
-            background-color: #252525;
-            padding: clamp(12px, 1.5vw, 20px) clamp(10px, 1vw, 16px);
-            border-bottom: 1px solid #3d3d3d;
-            text-align: center;
-        }
-
-        .day-header.today {
-            background: linear-gradient(135deg, rgba(79, 172, 254, 0.2), rgba(79, 172, 254, 0.05));
-            border-bottom-color: #4facfe;
-        }
-
-        .day-name {
-            font-size: clamp(10px, 0.9vw, 14px);
-            color: #a0a0a0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .day-date {
-            font-size: clamp(20px, 2vw, 36px);
-            font-weight: 700;
-            color: #e0e0e0;
-        }
-
-        .day-date.today {
-            color: #4facfe;
-        }
-
-        .tasks-container {
+            gap: 2rem;
             flex: 1;
-            padding: clamp(8px, 1vw, 16px);
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: clamp(8px, 1vw, 12px);
         }
 
-        .task-card {
-            background-color: #383838;
-            border-left: 4px solid #666;
-            border-radius: 4px;
-            padding: clamp(10px, 1vw, 16px);
-            font-size: clamp(12px, 1vw, 16px);
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .week-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: #0f172a;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #334155;
+        }
+
+        .week-nav button {
+            background: none;
+            border: none;
+            color: #64748b;
             cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid #444;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+            font-size: 1.2rem;
+            padding: 0.25rem 0.5rem;
+            transition: color 0.2s;
         }
 
-        .task-card:hover {
-            background-color: #404040;
-            transform: translateX(4px);
+        .week-nav button:hover {
+            color: #94a3b8;
         }
 
-        .task-card.priority-high {
-            border-left-color: #ff5252;
-        }
-
-        .task-card.priority-medium {
-            border-left-color: #ffa726;
-        }
-
-        .task-card.priority-low {
-            border-left-color: #66bb6a;
-        }
-
-        .task-card.overdue {
-            background-color: rgba(255, 82, 82, 0.1);
-            border-color: #ff5252;
-            border-left-color: #ff5252;
-            box-shadow: 0 0 10px rgba(255, 82, 82, 0.2);
-        }
-
-        .task-id {
-            font-size: clamp(9px, 0.8vw, 13px);
-            color: #808080;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .task-title {
-            font-weight: 500;
-            color: #e0e0e0;
-            line-height: 1.3;
-            word-break: break-word;
-            font-size: clamp(12px, 1vw, 16px);
-        }
-
-        .task-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: clamp(10px, 0.9vw, 13px);
-        }
-
-        .task-priority {
-            display: inline-block;
-            padding: clamp(2px, 0.3vw, 4px) clamp(6px, 0.8vw, 10px);
-            border-radius: 3px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: clamp(9px, 0.8vw, 12px);
-        }
-
-        .task-priority.high {
-            background-color: rgba(255, 82, 82, 0.2);
-            color: #ff5252;
-        }
-
-        .task-priority.medium {
-            background-color: rgba(255, 167, 38, 0.2);
-            color: #ffa726;
-        }
-
-        .task-priority.low {
-            background-color: rgba(102, 187, 106, 0.2);
-            color: #66bb6a;
-        }
-
-        .task-due {
-            color: #a0a0a0;
-            font-size: 10px;
-        }
-
-        .task-due.overdue {
-            color: #ff5252;
-            font-weight: 600;
-        }
-
-        .no-tasks {
-            color: #606060;
+        .week-display {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            min-width: 200px;
             text-align: center;
-            padding: 20px 10px;
-            font-size: 12px;
-            flex: 1;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-create {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* Scrollbar styling */
-        .tasks-container::-webkit-scrollbar {
-            width: 6px;
+        .btn-create:hover {
+            background: #2563eb;
+            transform: scale(1.05);
         }
 
-        .tasks-container::-webkit-scrollbar-track {
-            background: #2d2d2d;
+        .btn-save {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
         }
 
-        .tasks-container::-webkit-scrollbar-thumb {
-            background: #555;
-            border-radius: 3px;
+        .btn-save:hover:not(:disabled) {
+            background: #059669;
+            transform: translateY(-2px);
         }
 
-        .tasks-container::-webkit-scrollbar-thumb:hover {
-            background: #666;
+        .btn-save:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .calendar {
-                gap: 8px;
+        .save-counter {
+            display: inline-block;
+            background: #1e293b;
+            color: #fbbf24;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        main {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ===== CALENDAR GRID ===== */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .day-column {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+            transition: border-color 0.2s;
+        }
+
+        .day-column:hover {
+            border-color: #475569;
+        }
+
+        .day-column.drag-over {
+            border-color: #3b82f6;
+            background: #1e293b;
+            box-shadow: inset 0 0 0 1px #3b82f6;
+        }
+
+        .day-header {
+            background: #0f172a;
+            padding: 1rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .day-name {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .day-date {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .day-date.today {
+            color: #3b82f6;
+        }
+
+        .day-date.past {
+            color: #64748b;
+        }
+
+        .tasks-container {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* ===== TASK CARD ===== */
+        .task-card {
+            background: #334155;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .task-card.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .task-card:hover {
+            background: #475569;
+            transform: translateX(4px);
+        }
+
+        .task-card.high {
+            border-left-color: #ef4444;
+        }
+
+        .task-card.medium {
+            border-left-color: #f59e0b;
+        }
+
+        .task-card.low {
+            border-left-color: #10b981;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            margin-bottom: 0.5rem;
+            word-break: break-word;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+            font-size: 0.75rem;
+        }
+
+        .task-priority {
+            background: #1e293b;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .task-priority.high {
+            color: #ef4444;
+        }
+
+        .task-priority.medium {
+            color: #f59e0b;
+        }
+
+        .task-priority.low {
+            color: #10b981;
+        }
+
+        .task-notes-indicator {
+            color: #64748b;
+        }
+
+        .task-modified {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        /* ===== MODALS ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
             }
-
-            .day-column {
-                min-height: 500px;
+            to {
+                opacity: 1;
             }
         }
 
+        .modal {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.75rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .btn-close:hover {
+            color: #cbd5e1;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+        }
+
+        label .required {
+            color: #ef4444;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        input[type="text"]:disabled,
+        input[type="date"]:disabled,
+        textarea:disabled,
+        select:disabled {
+            background: #1e293b;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .attachment-placeholder {
+            background: #0f172a;
+            border: 2px dashed #334155;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #334155;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #475569;
+            color: #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #64748b;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .modal-buttons .btn {
+            flex: 1;
+        }
+
+        /* ===== CONTEXT MENU ===== */
+        .context-menu {
+            position: fixed;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            min-width: 180px;
+            animation: slideIn 0.15s ease-out;
+        }
+
+        .context-menu.hidden {
+            display: none;
+        }
+
+        .context-menu-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: background 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .context-menu-item:hover {
+            background: #334155;
+        }
+
+        .context-menu-item:first-child {
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+
+        .context-menu-item:last-child {
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+
+        .context-menu-item.danger {
+            color: #ef4444;
+        }
+
+        .context-menu-item.danger:hover {
+            background: #7f1d1d;
+        }
+
+        /* ===== DATE PICKER MODAL ===== */
+        .date-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .date-picker-grid button {
+            padding: 0.75rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 0.375rem;
+            color: #cbd5e1;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .date-picker-grid button:hover:not(:disabled) {
+            border-color: #3b82f6;
+            background: #334155;
+        }
+
+        .date-picker-grid button:disabled {
+            color: #475569;
+            cursor: not-allowed;
+        }
+
+        .date-picker-grid button.selected {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* ===== SAVE CHANGES MODAL ===== */
+        .json-viewer {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 300px;
+            overflow-y: auto;
+            color: #cbd5e1;
+            word-break: break-all;
+            white-space: pre-wrap;
+        }
+
+        .btn-copy {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #4f46e5;
+        }
+
+        .btn-copy.copied {
+            background: #10b981;
+        }
+
+        /* ===== DIFF VIEW ===== */
+        .diff-item {
+            background: #0f172a;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .diff-type {
+            display: inline-block;
+            background: #1e293b;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+
+        .diff-type.create {
+            color: #10b981;
+            border-left-color: #10b981;
+        }
+
+        .diff-type.update {
+            color: #3b82f6;
+            border-left-color: #3b82f6;
+        }
+
+        .diff-type.move {
+            color: #f59e0b;
+            border-left-color: #f59e0b;
+        }
+
+        .diff-type.delete {
+            color: #ef4444;
+            border-left-color: #ef4444;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            body {
-                padding: 12px;
-            }
-
-            .header h1 {
-                font-size: 24px;
-            }
-
-            .calendar {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 6px;
-            }
-
-            .day-column {
-                min-height: 400px;
-            }
-
-            .day-header {
-                padding: 12px 8px;
-            }
-
-            .day-date {
-                font-size: 20px;
-            }
-
-            .day-name {
-                font-size: 10px;
-            }
-
-            .tasks-container {
-                padding: 8px;
-                gap: 8px;
-            }
-
-            .task-card {
-                padding: 10px;
-                font-size: 12px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .calendar {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .day-column {
-                min-height: 350px;
-            }
-
-            .header-info {
+            header {
                 flex-direction: column;
+                gap: 1rem;
                 align-items: flex-start;
             }
 
-            .today-date {
+            .header-left {
+                flex-direction: column;
                 width: 100%;
+                gap: 1rem;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .week-nav {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                width: 95%;
+                max-height: 95vh;
             }
         }
 
-        /* Large screens (ultrawide) */
-        @media (min-width: 1920px) {
-            body {
-                padding: 30px;
-            }
-            
-            .container {
-                padding: 0 40px;
-            }
-            
-            .header h1 {
-                font-size: 42px;
-            }
-            
-            .week-info {
-                font-size: 18px;
-            }
-            
-            .today-date {
-                font-size: 24px;
-                padding: 12px 24px;
-            }
-            
-            .calendar {
-                gap: 16px;
-            }
-            
-            .day-column {
-                min-height: 700px;
-            }
-            
-            .day-header {
-                padding: 20px;
-            }
-            
-            .day-name {
-                font-size: 14px;
-            }
-            
-            .day-date {
-                font-size: 32px;
-            }
-            
-            .tasks-container {
-                padding: 16px;
-                gap: 12px;
-            }
-            
-            .task-card {
-                padding: 16px;
-                font-size: 15px;
-            }
-            
-            .task-id {
-                font-size: 13px;
-            }
-            
-            .task-title {
-                font-size: 15px;
-            }
-            
-            .task-priority {
-                font-size: 11px;
-            }
-        }
-
-        /* Extra large screens (4K) */
-        @media (min-width: 2560px) {
-            .header h1 {
-                font-size: 48px;
-            }
-            
-            .day-column {
-                min-height: 800px;
-            }
-            
-            .day-date {
-                font-size: 36px;
-            }
-            
-            .task-card {
-                font-size: 16px;
-            }
-        }
-
-        .error-message {
-            background-color: rgba(255, 82, 82, 0.1);
-            border: 1px solid #ff5252;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 20px;
-            color: #ff5252;
-            font-size: 13px;
+        .empty-state {
+            color: #64748b;
+            text-align: center;
+            padding: 2rem 1rem;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
+    <!-- HEADER -->
+    <header>
+        <div class="header-left">
             <h1>📅 Task Calendar</h1>
-            <div class="header-info">
-                <div>
-                    <div class="week-info">
-                        Week of <span id="weekStart"></span> - <span id="weekEnd"></span>
-                    </div>
-                </div>
-                <div class="today-date">
-                    Today: <span id="todayDisplay"></span>
-                </div>
-                <div class="sync-status">
-                    <div class="sync-dot"></div>
-                    <span>Live sync: <span id="syncTime">just now</span></span>
-                </div>
+            <div class="week-nav">
+                <button id="prevWeekBtn" title="Previous week">‹</button>
+                <div class="week-display" id="weekDisplay">Week of Feb 21</div>
+                <button id="nextWeekBtn" title="Next week">›</button>
             </div>
         </div>
+        <div class="header-right">
+            <button class="btn-create" id="createTaskBtn" title="Create new task">+</button>
+            <button class="btn-save" id="saveChangesBtn" disabled>
+                💾 Save Changes
+                <span class="save-counter" id="saveCounter" style="display: none;">0</span>
+            </button>
+        </div>
+    </header>
 
-        <div id="errorContainer"></div>
+    <!-- MAIN CONTENT -->
+    <main>
+        <div class="calendar-grid" id="calendarGrid"></div>
+    </main>
 
-        <div class="calendar" id="calendar"></div>
+    <!-- MODAL: CREATE/EDIT TASK -->
+    <div class="modal-overlay" id="taskModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="taskModalTitle">Create New Task</h2>
+                <button class="btn-close" id="closeTaskModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="taskTitle">Title <span class="required">*</span></label>
+                    <input type="text" id="taskTitle" placeholder="Task title..." required>
+                </div>
+                <div class="form-group">
+                    <label for="taskDate">Date</label>
+                    <input type="date" id="taskDate">
+                </div>
+                <div class="form-group">
+                    <label for="taskPriority">Priority</label>
+                    <select id="taskPriority">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="taskNotes">Notes</label>
+                    <textarea id="taskNotes" placeholder="Add detailed notes..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Attachments (Coming Soon)</label>
+                    <div class="attachment-placeholder">
+                        📎 Drag files here or click to upload
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelTaskBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveTaskBtn">Create Task</button>
+            </div>
+        </div>
     </div>
 
+    <!-- MODAL: VIEW/EDIT TASK -->
+    <div class="modal-overlay" id="viewTaskModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="viewTaskTitle">Task Details</h2>
+                <button class="btn-close" id="closeViewTaskModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="viewTaskTitle">Title <span class="required">*</span></label>
+                    <input type="text" id="viewTaskTitle" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="viewTaskDate">Date</label>
+                    <input type="date" id="viewTaskDate" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="viewTaskPriority">Priority</label>
+                    <select id="viewTaskPriority" disabled>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="viewTaskNotes">Notes</label>
+                    <textarea id="viewTaskNotes" disabled></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelViewTaskBtn">Close</button>
+                <button class="btn btn-danger" id="deleteTaskBtn" style="margin-right: auto;">Delete</button>
+                <button class="btn btn-primary" id="editTaskBtn">Edit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: MOVE TASK -->
+    <div class="modal-overlay" id="moveTaskModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Move Task To...</h2>
+                <button class="btn-close" id="closeMoveTaskModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 1rem; color: #cbd5e1;">Select a new date for this task:</p>
+                <div id="moveTaskDatePicker"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SAVE CHANGES -->
+    <div class="modal-overlay" id="saveChangesModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Pending Changes</h2>
+                <button class="btn-close" id="closeSaveChangesModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="changesPreview"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelSaveBtn">Cancel</button>
+                <button class="btn btn-copy" id="copyChangesBtn">📋 Copy JSON</button>
+                <button class="btn btn-success" id="confirmSaveBtn">Confirm Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTEXT MENU -->
+    <div class="context-menu hidden" id="contextMenu"></div>
+
     <script>
-        // Configuration
-        const CONFIG = {
-            tasksPath: 'https://federiho.github.io/claw/tasker/tasks.json',
-            syncInterval: 30000, // 30 seconds
-            firstDayOfWeek: 1 // 0 = Sunday, 1 = Monday
+        // ===== STATE MANAGEMENT =====
+        const state = {
+            currentWeekStart: getMonday(new Date()),
+            tasks: [],
+            pendingChanges: [],
+            draggedTaskId: null,
+            editingTaskId: null,
+            currentModalMode: null // 'create', 'edit', 'view'
         };
 
-        // State
-        let tasks = [];
-        let lastSyncTime = new Date();
-
-        /**
-         * Get ISO date string for a date
-         */
-        function getDateString(date) {
-            return date.toISOString().split('T')[0];
+        // ===== INITIALIZATION =====
+        function init() {
+            loadFromLocalStorage();
+            renderCalendar();
+            attachEventListeners();
+            updateWeekDisplay();
+            restoreSessionState();
         }
 
-        /**
-         * Format date for display
-         */
-        function formatDate(date) {
-            return date.toLocaleDateString('it-IT', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
-        }
-
-        /**
-         * Get the start of the week
-         */
-        function getWeekStart(date) {
+        // ===== UTILITIES =====
+        function getMonday(date) {
             const d = new Date(date);
             const day = d.getDay();
-            const diff = d.getDate() - day + (CONFIG.firstDayOfWeek === 0 ? 0 : 1);
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
             return new Date(d.setDate(diff));
         }
 
-        /**
-         * Get array of 7 days starting from week start
-         */
-        function getWeekDays(startDate) {
-            const days = [];
-            for (let i = 0; i < 7; i++) {
-                const d = new Date(startDate);
-                d.setDate(d.getDate() + i);
-                days.push(d);
-            }
-            return days;
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
         }
 
-        /**
-         * Check if a date is today
-         */
+        function parseDate(dateStr) {
+            return new Date(dateStr + 'T00:00:00');
+        }
+
         function isToday(date) {
             const today = new Date();
-            return date.getFullYear() === today.getFullYear() &&
-                   date.getMonth() === today.getMonth() &&
-                   date.getDate() === today.getDate();
+            return date.toDateString() === today.toDateString();
         }
 
-        /**
-         * Check if a date is in the past
-         */
         function isPast(date) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             return date < today;
         }
 
-        /**
-         * Load tasks from JSON file (fallback to sample data if not available)
-         */
-        async function loadTasks() {
-            try {
-                // Add cache-busting parameter
-                const cacheBuster = '?t=' + Date.now();
-                const response = await fetch(CONFIG.tasksPath + cacheBuster);
-                if (!response.ok) throw new Error('File not found');
-                const data = await response.json();
-                tasks = data.tasks || [];
-            } catch (error) {
-                // Fallback: Use sample data
-                console.error('Fetch error:', error);
-                tasks = [
-                    { id: "42", title: "Review doc", due: getDateString(new Date()), priority: "high", status: "todo" },
-                    { id: "43", title: "Call client", due: null, priority: "medium", status: "todo" },
-                    { id: "44", title: "Meeting prep", due: getDateString(new Date(new Date().getTime() + 86400000)), priority: "high", status: "todo" },
-                    { id: "45", title: "Check emails", due: null, priority: "low", status: "todo" },
-                    { id: "46", title: "Update spreadsheet", due: getDateString(new Date(new Date().getTime() + 172800000)), priority: "medium", status: "todo" }
+        function getDayName(date) {
+            return date.toLocaleDateString('en-US', { weekday: 'long' });
+        }
+
+        function formatWeekDisplay(startDate) {
+            const endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + 6);
+            const monthStart = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const monthEnd = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            return `Week of ${monthStart} - ${monthEnd}`;
+        }
+
+        function generateId() {
+            return '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // ===== SESSION/LOCAL STORAGE =====
+        function restoreSessionState() {
+            const weekStr = sessionStorage.getItem('currentWeekStart');
+            if (weekStr) {
+                state.currentWeekStart = new Date(weekStr);
+            }
+        }
+
+        function saveSessionState() {
+            sessionStorage.setItem('currentWeekStart', state.currentWeekStart.toISOString());
+        }
+
+        function loadFromLocalStorage() {
+            const stored = localStorage.getItem('tasksData');
+            if (stored) {
+                const data = JSON.parse(stored);
+                state.tasks = data.tasks || [];
+                state.pendingChanges = data.pendingChanges || [];
+            } else {
+                // Sample data
+                const today = new Date();
+                state.tasks = [
+                    {
+                        id: generateId(),
+                        title: 'Design dashboard mockups',
+                        date: formatDate(today),
+                        priority: 'high',
+                        notes: 'Create 3 different layouts for the main dashboard'
+                    },
+                    {
+                        id: generateId(),
+                        title: 'Review pull requests',
+                        date: formatDate(new Date(today.getTime() + 86400000)),
+                        priority: 'medium',
+                        notes: ''
+                    },
+                    {
+                        id: generateId(),
+                        title: 'Team standup',
+                        date: formatDate(new Date(today.getTime() + 86400000 * 2)),
+                        priority: 'medium',
+                        notes: 'Discuss Q1 roadmap'
+                    }
                 ];
-                showError(`Could not load tasks. Using sample data. Check console for details.`);
             }
-            renderCalendar();
-            updateLastSyncTime();
         }
 
-        /**
-         * Show error message
-         */
-        function showError(message) {
-            const container = document.getElementById('errorContainer');
-            container.innerHTML = `<div class="error-message">⚠️ ${message}</div>`;
-            setTimeout(() => {
-                container.innerHTML = '';
-            }, 5000);
+        function saveToLocalStorage() {
+            localStorage.setItem('tasksData', JSON.stringify({
+                tasks: state.tasks,
+                pendingChanges: state.pendingChanges
+            }));
         }
 
-        /**
-         * Get tasks for a specific date
-         */
-        function getTasksForDate(date) {
-            const dateStr = getDateString(date);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const todayStr = getDateString(today);
+        // ===== RENDER CALENDAR =====
+        function renderCalendar() {
+            const container = document.getElementById('calendarGrid');
+            container.innerHTML = '';
 
-            return tasks.filter(task => {
-                // Completed tasks - show on their original due date
-                if (task.status === 'done') {
-                    return task.due === dateStr;
+            const days = [];
+            for (let i = 0; i < 7; i++) {
+                days.push(new Date(state.currentWeekStart.getTime() + i * 86400000));
+            }
+
+            days.forEach(day => {
+                const dayStr = formatDate(day);
+                const dayTasks = state.tasks.filter(t => t.date === dayStr);
+
+                const dayColumn = document.createElement('div');
+                dayColumn.className = 'day-column';
+                dayColumn.dataset.date = dayStr;
+                dayColumn.draggable = false;
+
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                dayHeader.innerHTML = `
+                    <div class="day-name">${getDayName(day)}</div>
+                    <div class="day-date ${isToday(day) ? 'today' : ''} ${isPast(day) ? 'past' : ''}">
+                        ${day.getDate()}
+                    </div>
+                `;
+
+                const tasksContainer = document.createElement('div');
+                tasksContainer.className = 'tasks-container';
+
+                if (dayTasks.length === 0) {
+                    tasksContainer.innerHTML = '<div class="empty-state">No tasks</div>';
+                } else {
+                    dayTasks.forEach(task => {
+                        tasksContainer.appendChild(createTaskCard(task));
+                    });
                 }
-                
-                // Tasks without due date go to today
-                if (task.due === null || task.due === undefined) {
-                    return dateStr === todayStr;
-                }
-                
-                // Check if task is overdue (due date is before today)
-                const taskDueDate = new Date(task.due);
-                taskDueDate.setHours(0, 0, 0, 0);
-                const isOverdue = taskDueDate < today;
-                
-                // If overdue, show on TODAY (rolling behavior)
-                if (isOverdue) {
-                    return dateStr === todayStr;
-                }
-                
-                // Regular task - check if due date matches
-                return task.due === dateStr;
+
+                dayColumn.appendChild(dayHeader);
+                dayColumn.appendChild(tasksContainer);
+
+                // Drag & drop events
+                dayColumn.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dayColumn.classList.add('drag-over');
+                });
+                dayColumn.addEventListener('dragleave', () => {
+                    dayColumn.classList.remove('drag-over');
+                });
+                dayColumn.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dayColumn.classList.remove('drag-over');
+                    if (state.draggedTaskId) {
+                        moveTask(state.draggedTaskId, dayStr);
+                    }
+                });
+
+                container.appendChild(dayColumn);
             });
         }
 
-        /**
-         * Sort tasks by priority
-         */
-        function sortTasks(taskList) {
-            const priorityOrder = { high: 0, medium: 1, low: 2 };
-            return taskList.sort((a, b) => {
-                return (priorityOrder[a.priority] || 3) - (priorityOrder[b.priority] || 3);
-            });
-        }
-
-        /**
-         * Create a task card HTML
-         */
         function createTaskCard(task) {
-            const dueDate = task.due ? new Date(task.due) : null;
-            const isOverdue = dueDate && isPast(dueDate) && !isToday(dueDate);
-            
-            let html = `<div class="task-card priority-${task.priority}${isOverdue ? ' overdue' : ''}">`;
-            html += `<div class="task-id">#${task.id}</div>`;
-            html += `<div class="task-title">${escapeHtml(task.title)}</div>`;
-            html += `<div class="task-meta">`;
-            html += `<span class="task-priority ${task.priority}">${task.priority}</span>`;
-            
-            if (isOverdue) {
-                html += `<span class="task-due overdue">OVERDUE</span>`;
-            } else if (dueDate) {
-                html += `<span class="task-due">${dueDate.toLocaleDateString('it-IT', { month: 'short', day: 'numeric' })}</span>`;
-            }
-            
-            html += `</div></div>`;
-            return html;
+            const card = document.createElement('div');
+            card.className = `task-card ${task.priority}`;
+            card.dataset.taskId = task.id;
+            card.draggable = true;
+
+            const isModified = state.pendingChanges.some(
+                c => c.data.id === task.id && (c.type === 'update' || c.type === 'move')
+            );
+
+            card.innerHTML = `
+                <div class="task-title">${escapeHtml(task.title)}</div>
+                <div class="task-meta">
+                    <span class="task-priority ${task.priority}">${task.priority}</span>
+                    ${task.notes ? '<span class="task-notes-indicator">📝</span>' : ''}
+                    ${isModified ? '<span class="task-modified">●</span>' : ''}
+                </div>
+            `;
+
+            // Click to view/edit
+            card.addEventListener('click', (e) => {
+                if (e.button !== 2) { // Not right-click
+                    openViewTaskModal(task.id);
+                }
+            });
+
+            // Drag & drop
+            card.addEventListener('dragstart', (e) => {
+                state.draggedTaskId = task.id;
+                card.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+                state.draggedTaskId = null;
+            });
+
+            // Context menu (right-click)
+            card.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                openContextMenu(e, task.id);
+            });
+
+            return card;
         }
 
-        /**
-         * Escape HTML special characters
-         */
         function escapeHtml(text) {
             const map = {
                 '&': '&amp;',
@@ -651,100 +1097,436 @@
             return text.replace(/[&<>"']/g, m => map[m]);
         }
 
-        /**
-         * Get day name
-         */
-        function getDayName(date) {
-            return date.toLocaleDateString('it-IT', { weekday: 'short' }).toUpperCase();
+        // ===== NAVIGATION =====
+        function previousWeek() {
+            state.currentWeekStart.setDate(state.currentWeekStart.getDate() - 7);
+            saveSessionState();
+            updateWeekDisplay();
+            renderCalendar();
         }
 
-        /**
-         * Render the calendar
-         */
-        function renderCalendar() {
+        function nextWeek() {
+            state.currentWeekStart.setDate(state.currentWeekStart.getDate() + 7);
+            saveSessionState();
+            updateWeekDisplay();
+            renderCalendar();
+        }
+
+        function updateWeekDisplay() {
+            document.getElementById('weekDisplay').textContent = formatWeekDisplay(state.currentWeekStart);
+        }
+
+        // ===== TASK OPERATIONS =====
+        function openCreateTaskModal() {
+            state.currentModalMode = 'create';
+            document.getElementById('taskModalTitle').textContent = 'Create New Task';
+            document.getElementById('saveTaskBtn').textContent = 'Create Task';
+            
             const today = new Date();
-            const weekStart = getWeekStart(today);
-            const weekDays = getWeekDays(weekStart);
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDate').value = formatDate(today);
+            document.getElementById('taskPriority').value = 'medium';
+            document.getElementById('taskNotes').value = '';
+            
+            document.getElementById('taskModal').classList.add('active');
+        }
 
-            // Update header
-            document.getElementById('weekStart').textContent = weekStart.toLocaleDateString('it-IT', { month: 'short', day: 'numeric' });
-            const weekEnd = new Date(weekStart);
-            weekEnd.setDate(weekEnd.getDate() + 6);
-            document.getElementById('weekEnd').textContent = weekEnd.toLocaleDateString('it-IT', { month: 'short', day: 'numeric' });
-            document.getElementById('todayDisplay').textContent = formatDate(today);
+        function openViewTaskModal(taskId) {
+            const task = state.tasks.find(t => t.id === taskId);
+            if (!task) return;
 
-            // Render calendar
-            const calendar = document.getElementById('calendar');
-            calendar.innerHTML = '';
+            state.editingTaskId = taskId;
+            state.currentModalMode = 'view';
 
-            weekDays.forEach(day => {
-                const dayTasks = sortTasks(getTasksForDate(day));
-                const isTodayFlag = isToday(day);
+            document.getElementById('viewTaskTitle').value = task.title;
+            document.getElementById('viewTaskDate').value = task.date;
+            document.getElementById('viewTaskPriority').value = task.priority;
+            document.getElementById('viewTaskNotes').value = task.notes;
 
-                let html = `<div class="day-column${isTodayFlag ? ' today' : ''}">`;
-                html += `<div class="day-header${isTodayFlag ? ' today' : ''}">`;
-                html += `<div class="day-name">${getDayName(day)}</div>`;
-                html += `<div class="day-date${isTodayFlag ? ' today' : ''}">${day.getDate()}</div>`;
-                html += `</div>`;
-                html += `<div class="tasks-container">`;
+            // Disable edit button if in edit mode
+            const editBtn = document.getElementById('editTaskBtn');
+            editBtn.textContent = 'Edit';
+            editBtn.disabled = false;
 
-                if (dayTasks.length === 0) {
-                    html += `<div class="no-tasks">No tasks</div>`;
-                } else {
-                    dayTasks.forEach(task => {
-                        html += createTaskCard(task);
-                    });
+            document.getElementById('viewTaskModal').classList.add('active');
+        }
+
+        function editCurrentTask() {
+            state.currentModalMode = 'edit';
+            document.getElementById('viewTaskTitle').disabled = false;
+            document.getElementById('viewTaskDate').disabled = false;
+            document.getElementById('viewTaskPriority').disabled = false;
+            document.getElementById('viewTaskNotes').disabled = false;
+
+            document.getElementById('editTaskBtn').textContent = 'Save Changes';
+            document.getElementById('editTaskBtn').onclick = () => saveEditedTask();
+        }
+
+        function saveEditedTask() {
+            const task = state.tasks.find(t => t.id === state.editingTaskId);
+            const newTitle = document.getElementById('viewTaskTitle').value.trim();
+
+            if (!newTitle) {
+                alert('Title is required');
+                return;
+            }
+
+            const changes = {
+                id: task.id,
+                title: newTitle,
+                date: document.getElementById('viewTaskDate').value,
+                priority: document.getElementById('viewTaskPriority').value,
+                notes: document.getElementById('viewTaskNotes').value
+            };
+
+            // Check if anything changed
+            const hasChanges = 
+                changes.title !== task.title ||
+                changes.date !== task.date ||
+                changes.priority !== task.priority ||
+                changes.notes !== task.notes;
+
+            if (hasChanges) {
+                // Remove old update change if exists
+                state.pendingChanges = state.pendingChanges.filter(
+                    c => !(c.type === 'update' && c.data.id === task.id)
+                );
+
+                // Add new update change
+                state.pendingChanges.push({
+                    type: 'update',
+                    data: changes
+                });
+
+                // Update task
+                Object.assign(task, changes);
+                updatePendingCounter();
+                saveToLocalStorage();
+            }
+
+            closeViewTaskModal();
+            renderCalendar();
+        }
+
+        function createTask() {
+            const title = document.getElementById('taskTitle').value.trim();
+            if (!title) {
+                alert('Title is required');
+                return;
+            }
+
+            const dateStr = document.getElementById('taskDate').value;
+            const newTask = {
+                id: generateId(),
+                title,
+                date: dateStr || formatDate(new Date()),
+                priority: document.getElementById('taskPriority').value,
+                notes: document.getElementById('taskNotes').value
+            };
+
+            state.tasks.push(newTask);
+            state.pendingChanges.push({
+                type: 'create',
+                data: newTask
+            });
+
+            updatePendingCounter();
+            saveToLocalStorage();
+            closeTaskModal();
+            renderCalendar();
+        }
+
+        function deleteTask(taskId) {
+            const task = state.tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            state.tasks = state.tasks.filter(t => t.id !== taskId);
+            
+            // Remove from pending changes and add delete
+            state.pendingChanges = state.pendingChanges.filter(c => c.data.id !== taskId);
+            state.pendingChanges.push({
+                type: 'delete',
+                data: { id: taskId }
+            });
+
+            updatePendingCounter();
+            saveToLocalStorage();
+            closeViewTaskModal();
+            renderCalendar();
+        }
+
+        function moveTask(taskId, newDate) {
+            const task = state.tasks.find(t => t.id === taskId);
+            if (!task || task.date === newDate) return;
+
+            const oldDate = task.date;
+            task.date = newDate;
+
+            // Add move change
+            state.pendingChanges = state.pendingChanges.filter(
+                c => !(c.type === 'move' && c.data.id === taskId)
+            );
+            state.pendingChanges.push({
+                type: 'move',
+                data: { id: taskId, fromDate: oldDate, toDate: newDate }
+            });
+
+            updatePendingCounter();
+            saveToLocalStorage();
+            renderCalendar();
+        }
+
+        // ===== CONTEXT MENU =====
+        function openContextMenu(e, taskId) {
+            const menu = document.getElementById('contextMenu');
+            menu.innerHTML = '';
+            menu.style.top = (e.clientY) + 'px';
+            menu.style.left = (e.clientX) + 'px';
+
+            const items = [
+                { label: '✏️ Edit', action: () => openViewTaskModal(taskId) },
+                { label: '📍 Move to...', action: () => openMoveTaskModal(taskId) },
+                { label: '🗑️ Delete', action: () => {
+                    if (confirm('Delete this task?')) {
+                        deleteTask(taskId);
+                    }
+                }, danger: true }
+            ];
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `context-menu-item ${item.danger ? 'danger' : ''}`;
+                div.textContent = item.label;
+                div.addEventListener('click', () => {
+                    item.action();
+                    menu.classList.add('hidden');
+                });
+                menu.appendChild(div);
+            });
+
+            menu.classList.remove('hidden');
+        }
+
+        // ===== MOVE TASK MODAL =====
+        function openMoveTaskModal(taskId) {
+            state.editingTaskId = taskId;
+            const task = state.tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            const container = document.getElementById('moveTaskDatePicker');
+            container.innerHTML = '';
+
+            const days = [];
+            for (let i = 0; i < 7; i++) {
+                days.push(new Date(state.currentWeekStart.getTime() + i * 86400000));
+            }
+
+            const grid = document.createElement('div');
+            grid.className = 'date-picker-grid';
+
+            days.forEach(day => {
+                const dayStr = formatDate(day);
+                const btn = document.createElement('button');
+                btn.textContent = `${getDayName(day).substring(0, 3)}\n${day.getDate()}`;
+                if (dayStr === task.date) {
+                    btn.classList.add('selected');
+                }
+                btn.addEventListener('click', () => {
+                    moveTask(taskId, dayStr);
+                    closeMoveTaskModal();
+                    renderCalendar();
+                });
+                grid.appendChild(btn);
+            });
+
+            container.appendChild(grid);
+            document.getElementById('moveTaskModal').classList.add('active');
+        }
+
+        // ===== SAVE CHANGES MODAL =====
+        function openSaveChangesModal() {
+            const container = document.getElementById('changesPreview');
+            container.innerHTML = '';
+
+            state.pendingChanges.forEach((change, idx) => {
+                const item = document.createElement('div');
+                item.className = 'diff-item';
+                
+                const typeSpan = document.createElement('div');
+                typeSpan.className = `diff-type ${change.type}`;
+                typeSpan.textContent = change.type.toUpperCase();
+                
+                const dataDiv = document.createElement('div');
+                dataDiv.style.marginTop = '0.5rem';
+
+                if (change.type === 'create') {
+                    dataDiv.innerHTML = `
+                        <strong>${escapeHtml(change.data.title)}</strong><br>
+                        <small>📅 ${change.data.date} | 🏷️ ${change.data.priority}</small>
+                    `;
+                } else if (change.type === 'update') {
+                    dataDiv.innerHTML = `
+                        <strong>${escapeHtml(change.data.title)}</strong><br>
+                        <small>📅 ${change.data.date} | 🏷️ ${change.data.priority}</small>
+                    `;
+                } else if (change.type === 'move') {
+                    dataDiv.innerHTML = `
+                        <strong>${state.tasks.find(t => t.id === change.data.id)?.title || 'Unknown'}</strong><br>
+                        <small>${change.data.fromDate} → ${change.data.toDate}</small>
+                    `;
+                } else if (change.type === 'delete') {
+                    dataDiv.innerHTML = `
+                        <small>ID: ${change.data.id}</small>
+                    `;
                 }
 
-                html += `</div></div>`;
+                item.appendChild(typeSpan);
+                item.appendChild(dataDiv);
+                container.appendChild(item);
+            });
 
-                const div = document.createElement('div');
-                div.innerHTML = html;
-                calendar.appendChild(div.firstElementChild);
+            // Add JSON viewer
+            const jsonDiv = document.createElement('div');
+            jsonDiv.style.marginTop = '1.5rem';
+            jsonDiv.innerHTML = '<label style="display: block; margin-bottom: 0.5rem;">JSON Export:</label>';
+            const viewer = document.createElement('div');
+            viewer.className = 'json-viewer';
+            viewer.textContent = JSON.stringify(state.pendingChanges, null, 2);
+            jsonDiv.appendChild(viewer);
+            container.appendChild(jsonDiv);
+
+            document.getElementById('saveChangesModal').classList.add('active');
+        }
+
+        function confirmSaveChanges() {
+            // In a real app, this would send to backend
+            console.log('Saving changes:', state.pendingChanges);
+            
+            state.pendingChanges = [];
+            updatePendingCounter();
+            saveToLocalStorage();
+            closeSaveChangesModal();
+            renderCalendar();
+
+            alert('Changes saved successfully!');
+        }
+
+        // ===== MODAL CONTROLS =====
+        function closeTaskModal() {
+            document.getElementById('taskModal').classList.remove('active');
+        }
+
+        function closeViewTaskModal() {
+            document.getElementById('viewTaskModal').classList.remove('active');
+            // Reset edit mode
+            document.getElementById('viewTaskTitle').disabled = true;
+            document.getElementById('viewTaskDate').disabled = true;
+            document.getElementById('viewTaskPriority').disabled = true;
+            document.getElementById('viewTaskNotes').disabled = true;
+            document.getElementById('editTaskBtn').textContent = 'Edit';
+            document.getElementById('editTaskBtn').onclick = editCurrentTask;
+        }
+
+        function closeMoveTaskModal() {
+            document.getElementById('moveTaskModal').classList.remove('active');
+        }
+
+        function closeSaveChangesModal() {
+            document.getElementById('saveChangesModal').classList.remove('active');
+        }
+
+        // ===== PENDING CHANGES COUNTER =====
+        function updatePendingCounter() {
+            const count = state.pendingChanges.length;
+            const btn = document.getElementById('saveChangesBtn');
+            const counter = document.getElementById('saveCounter');
+
+            if (count > 0) {
+                btn.disabled = false;
+                counter.textContent = count;
+                counter.style.display = 'inline-block';
+            } else {
+                btn.disabled = true;
+                counter.style.display = 'none';
+            }
+        }
+
+        // ===== EVENT LISTENERS =====
+        function attachEventListeners() {
+            // Navigation
+            document.getElementById('prevWeekBtn').addEventListener('click', previousWeek);
+            document.getElementById('nextWeekBtn').addEventListener('click', nextWeek);
+
+            // Create task
+            document.getElementById('createTaskBtn').addEventListener('click', openCreateTaskModal);
+            document.getElementById('saveTaskBtn').addEventListener('click', createTask);
+            document.getElementById('cancelTaskBtn').addEventListener('click', closeTaskModal);
+            document.getElementById('closeTaskModal').addEventListener('click', closeTaskModal);
+
+            // View/Edit task
+            document.getElementById('editTaskBtn').addEventListener('click', editCurrentTask);
+            document.getElementById('deleteTaskBtn').addEventListener('click', () => {
+                if (confirm('Delete this task?')) {
+                    deleteTask(state.editingTaskId);
+                }
+            });
+            document.getElementById('cancelViewTaskBtn').addEventListener('click', closeViewTaskModal);
+            document.getElementById('closeViewTaskModal').addEventListener('click', closeViewTaskModal);
+
+            // Move task modal
+            document.getElementById('closeMoveTaskModal').addEventListener('click', closeMoveTaskModal);
+
+            // Save changes
+            document.getElementById('saveChangesBtn').addEventListener('click', openSaveChangesModal);
+            document.getElementById('confirmSaveBtn').addEventListener('click', confirmSaveChanges);
+            document.getElementById('cancelSaveBtn').addEventListener('click', closeSaveChangesModal);
+            document.getElementById('closeSaveChangesModal').addEventListener('click', closeSaveChangesModal);
+
+            // Copy JSON
+            document.getElementById('copyChangesBtn').addEventListener('click', () => {
+                const json = JSON.stringify(state.pendingChanges, null, 2);
+                navigator.clipboard.writeText(json).then(() => {
+                    const btn = document.getElementById('copyChangesBtn');
+                    const original = btn.textContent;
+                    btn.textContent = '✅ Copied!';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = original;
+                        btn.classList.remove('copied');
+                    }, 2000);
+                });
+            });
+
+            // Close context menu on click elsewhere
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.context-menu')) {
+                    document.getElementById('contextMenu').classList.add('hidden');
+                }
+            });
+
+            // Close modals on overlay click
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        overlay.classList.remove('active');
+                        // Reset edit mode if view modal
+                        if (overlay.id === 'viewTaskModal') {
+                            closeViewTaskModal();
+                        }
+                    }
+                });
+            });
+
+            // Enter key in create modal
+            document.getElementById('taskTitle').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && document.getElementById('taskModal').classList.contains('active')) {
+                    createTask();
+                }
             });
         }
 
-        /**
-         * Update the last sync time display
-         */
-        function updateLastSyncTime() {
-            const now = new Date();
-            const seconds = Math.floor((now - lastSyncTime) / 1000);
-            
-            let timeText = 'just now';
-            if (seconds >= 60) {
-                timeText = `${Math.floor(seconds / 60)}m ago`;
-            } else if (seconds > 0) {
-                timeText = `${seconds}s ago`;
-            }
-            
-            document.getElementById('syncTime').textContent = timeText;
-            lastSyncTime = now;
-        }
-
-        /**
-         * Initialize the app
-         */
-        async function init() {
-            await loadTasks();
-            renderCalendar();
-
-            // Set up periodic sync
-            setInterval(async () => {
-                await loadTasks();
-                renderCalendar();
-            }, CONFIG.syncInterval);
-
-            // Update time display
-            setInterval(updateLastSyncTime, 5000);
-        }
-
-        // Start the app when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
