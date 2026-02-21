@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasker — Login</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #1a1a1a;
+            color: #e8eaed;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-box {
+            background: #2d2d2d;
+            padding: 40px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .logo p {
+            color: #9aa0a6;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            color: #bdc1c6;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            background: #3c4043;
+            border: 1px solid #5f6368;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+        }
+        input[type="password"]:focus {
+            border-color: #8ab4f8;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #8ab4f8;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .login-btn:hover {
+            background: #7aa4e8;
+        }
+        .error {
+            color: #ea4335;
+            font-size: 14px;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+        .restricted {
+            text-align: center;
+            color: #9aa0a6;
+            font-size: 13px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #3c4043;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="logo">
+            <h1>Tasker</h1>
+            <p>Task Management System</p>
+        </div>
+        <form onsubmit="return handleLogin(event)">
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="login-btn">Access</button>
+            <div class="error" id="error">Invalid password</div>
+        </form>
+        <div class="restricted">
+            <p>🔒 Restricted Access</p>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin(e) {
+            e.preventDefault();
+            const password = document.getElementById("password").value;
+            const error = document.getElementById("error");
+            
+            if (password === "task13!Fig") {
+                sessionStorage.setItem("tasker_auth", "true");
+                window.location.href = "dashboard.html";
+            } else {
+                error.style.display = "block";
+            }
+            return false;
+        }
+
+        if (sessionStorage.getItem("tasker_auth") === "true") {
+            window.location.href = "dashboard.html";
+        }
+    </script>
+</body>
+</html>
