@@ -372,7 +372,7 @@
     <script>
         // Configuration
         const CONFIG = {
-            tasksPath: '/tmp/tasks.json',
+            tasksPath: 'https://federiho.github.io/claw/tasker/tasks.json',
             syncInterval: 30000, // 30 seconds
             firstDayOfWeek: 1 // 0 = Sunday, 1 = Monday
         };
@@ -446,12 +446,15 @@
          */
         async function loadTasks() {
             try {
-                const response = await fetch(CONFIG.tasksPath);
+                // Add cache-busting parameter
+                const cacheBuster = '?t=' + Date.now();
+                const response = await fetch(CONFIG.tasksPath + cacheBuster);
                 if (!response.ok) throw new Error('File not found');
                 const data = await response.json();
                 tasks = data.tasks || [];
             } catch (error) {
                 // Fallback: Use sample data
+                console.error('Fetch error:', error);
                 tasks = [
                     { id: "42", title: "Review doc", due: getDateString(new Date()), priority: "high", status: "todo" },
                     { id: "43", title: "Call client", due: null, priority: "medium", status: "todo" },
@@ -459,8 +462,9 @@
                     { id: "45", title: "Check emails", due: null, priority: "low", status: "todo" },
                     { id: "46", title: "Update spreadsheet", due: getDateString(new Date(new Date().getTime() + 172800000)), priority: "medium", status: "todo" }
                 ];
-                showError(`Could not load ${CONFIG.tasksPath}. Using sample data.`);
+                showError(`Could not load tasks. Using sample data. Check console for details.`);
             }
+            renderCalendar();
             updateLastSyncTime();
         }
 
