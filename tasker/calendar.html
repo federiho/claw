@@ -834,10 +834,22 @@
         let lastSyncTime = new Date();
 
         /**
-         * Get ISO date string for a date
+         * Get ISO date string for a date (local timezone)
          */
         function getDateString(date) {
-            return date.toISOString().split('T')[0];
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        /**
+         * Parse date string to Date object (treating as local date)
+         */
+        function parseDateString(dateStr) {
+            if (!dateStr) return null;
+            const [year, month, day] = dateStr.split('-').map(Number);
+            return new Date(year, month - 1, day);
         }
 
         /**
@@ -1075,9 +1087,9 @@
                 }
                 
                 // Check if task is overdue (due date is before today)
-                const taskDueDate = new Date(task.due);
-                taskDueDate.setHours(0, 0, 0, 0);
-                const isOverdue = taskDueDate < today;
+                const taskDueDate = parseDateString(task.due);
+                if (taskDueDate) taskDueDate.setHours(0, 0, 0, 0);
+                const isOverdue = taskDueDate && taskDueDate < today;
                 
                 // If overdue, show on TODAY (rolling behavior)
                 if (isOverdue) {
@@ -1108,7 +1120,7 @@
             const isCompleted = task.status === 'done';
             
             let html = `<div class="task-card priority-${task.priority}${isOverdue ? ' overdue' : ''}${isCompleted ? ' completed' : ''}" draggable="true" data-task-id="${task.id}">`;
-            html += `<input type="checkbox" class="task-complete-toggle" ${isCompleted ? 'checked' : ''} onclick="event.stopPropagation(); toggleTaskComplete('${task.id}', this.checked);" title="Mark as ${isCompleted ? 'incomplete' : 'complete'}">`;
+            html += `<input type="checkbox" class="task-complete-toggle" ${isCompleted ? 'checked' : ''} data-task-id="${task.id}" title="Mark as ${isCompleted ? 'incomplete' : 'complete'}">`;
             html += `<div class="task-id">#${task.id}</div>`;
             html += `<div class="task-title">${escapeHtml(task.title)}</div>`;
             html += `<div class="task-meta">`;
@@ -1217,6 +1229,18 @@
             
             // Setup drag & drop
             setupDragAndDrop();
+            setupCheckboxListeners();
+        }
+        
+        function setupCheckboxListeners() {
+            const checkboxes = document.querySelectorAll('.task-complete-toggle');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const taskId = this.getAttribute('data-task-id');
+                    toggleTaskComplete(taskId, this.checked);
+                });
+            });
         }
         
         function setupDragAndDrop() {
@@ -1384,8 +1408,8 @@
 
         // Make task cards clickable
         document.addEventListener('click', function(e) {
-            // Don't open modal if clicking on checkbox
-            if (e.target.classList.contains('task-complete-toggle')) return;
+            // Don't open modal if clicking on checkbox or its container
+            if (e.target.classList.contains('task-complete-toggle') || e.target.closest('.task-complete-toggle')) return;
             
             const taskCard = e.target.closest('.task-card');
             if (taskCard) {
