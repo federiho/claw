@@ -333,12 +333,13 @@
         // Initialize folder counts
         updateFolderCounts();
 
-        // Folder click handlers
-        document.querySelectorAll('[data-folder]').forEach(folder => {
-            folder.addEventListener('click', function() {
-                const folderName = this.getAttribute('data-folder');
+        // Folder click handlers - use event delegation for dynamic folders
+        document.getElementById('folderList').addEventListener('click', function(e) {
+            const folder = e.target.closest('[data-folder]');
+            if (folder && !folder.classList.contains('drag-over')) {
+                const folderName = folder.getAttribute('data-folder');
                 openFolder(folderName);
-            });
+            }
         });
 
         function openFolder(folderName) {
@@ -543,10 +544,7 @@
                     <div class="file-meta" id="count-${folderId}">0 items</div>
                 `;
                 
-                // Add event listeners
-                newFolder.addEventListener('click', function() {
-                    openFolder(folderId);
-                });
+                // Add drag and drop listeners (click is handled by event delegation)
                 newFolder.addEventListener('dragover', handleDragOver);
                 newFolder.addEventListener('dragleave', handleDragLeave);
                 newFolder.addEventListener('drop', handleDrop);
