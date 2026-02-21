@@ -140,6 +140,26 @@
         .folder-row.readonly:hover {
             background: rgba(138, 180, 248, 0.05);
         }
+        .folder-actions {
+            display: none;
+            gap: 8px;
+        }
+        .folder-row:hover .folder-actions {
+            display: flex;
+        }
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: #9aa0a6;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .action-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -148,6 +168,18 @@
         .empty-state-icon {
             font-size: 48px;
             margin-bottom: 20px;
+        }
+        .remove-from-folder {
+            background: #ea4335;
+            color: #fff;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .remove-from-folder:hover {
+            background: #d33b28;
         }
         
         /* Modal */
@@ -207,6 +239,11 @@
             color: #fff;
         }
         .modal-btn.confirm:hover { background: #2d8a47; }
+        .modal-btn.delete {
+            background: #ea4335;
+            color: #fff;
+        }
+        .modal-btn.delete:hover { background: #d33b28; }
     </style>
 </head>
 <body>
@@ -231,16 +268,7 @@
         <div id="foldersView">
             <div class="section-title">Folders</div>
             <div class="file-list" id="folderList">
-                <div class="file-item folder-row" data-folder="strategy" draggable="false">
-                    <div class="file-icon">📂</div>
-                    <div class="file-name">Strategy Documents</div>
-                    <div class="file-meta" id="count-strategy">6 items</div>
-                </div>
-                <div class="file-item folder-row" data-folder="market" draggable="false">
-                    <div class="file-icon">📂</div>
-                    <div class="file-name">Market Analysis</div>
-                    <div class="file-meta" id="count-market">6 items</div>
-                </div>
+                <!-- Folders loaded dynamically -->
             </div>
 
             <div class="section-title">Files</div>
@@ -303,6 +331,30 @@
         </div>
     </div>
 
+    <!-- Rename Folder Modal -->
+    <div class="modal" id="renameFolderModal">
+        <div class="modal-content">
+            <h3>Rename Folder</h3>
+            <input type="text" id="renameFolderInput" placeholder="New folder name">
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeRenameModal()">Cancel</button>
+                <button class="modal-btn confirm" onclick="confirmRenameFolder()">Rename</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Folder Modal -->
+    <div class="modal" id="deleteFolderModal">
+        <div class="modal-content">
+            <h3>Delete Folder?</h3>
+            <p style="color: #9aa0a6; margin-bottom: 20px;">Files in this folder will return to the root. This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="modal-btn delete" onclick="confirmDeleteFolder()">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Check authentication
         if (sessionStorage.getItem("authenticated") !== "true") {
@@ -313,9 +365,18 @@
         const userName = sessionStorage.getItem("userName") || "User";
         const isAdmin = userRole === "admin";
         let currentFolder = null;
+        let editingFolderId = null;
+        let deletingFolderId = null;
 
-        // Load folder assignments from session storage
-        let folderAssignments = JSON.parse(sessionStorage.getItem('folderAssignments') || '{}');
+        // Default folders
+        const defaultFolders = [
+            { id: 'strategy', name: 'Strategy Documents', count: 6 },
+            { id: 'market', name: 'Market Analysis', count: 6 }
+        ];
+
+        // Load from localStorage or use defaults
+        let folders = JSON.parse(localStorage.getItem('dbFolders') || JSON.stringify(defaultFolders));
+        let folderAssignments = JSON.parse(localStorage.getItem('dbFolderAssignments') || '{}');
 
         // Update UI based on role
         document.getElementById("userBadge").textContent = userName;
@@ -325,16 +386,29 @@
             setupDragAndDrop();
         } else {
             document.getElementById("userBadge").classList.remove("admin");
-            document.querySelectorAll('.folder-row').forEach(folder => {
-                folder.classList.add('readonly');
-            });
         }
 
-        // Initialize folder counts
-        updateFolderCounts();
+        // Initial render
+        renderFolders();
+        updateFileVisibility();
 
-        // Folder click handlers - use event delegation for dynamic folders
+        // Event delegation for folder clicks
         document.getElementById('folderList').addEventListener('click', function(e) {
+            // Handle action buttons
+            if (e.target.closest('.rename-btn')) {
+                e.stopPropagation();
+                const folder = e.target.closest('[data-folder]');
+                startRenameFolder(folder.getAttribute('data-folder'));
+                return;
+            }
+            if (e.target.closest('.delete-btn')) {
+                e.stopPropagation();
+                const folder = e.target.closest('[data-folder]');
+                startDeleteFolder(folder.getAttribute('data-folder'));
+                return;
+            }
+            
+            // Handle folder click
             const folder = e.target.closest('[data-folder]');
             if (folder && !folder.classList.contains('drag-over')) {
                 const folderName = folder.getAttribute('data-folder');
@@ -342,29 +416,84 @@
             }
         });
 
-        function openFolder(folderName) {
-            currentFolder = folderName;
-            const folderNames = {
-                'strategy': 'Strategy Documents',
-                'market': 'Market Analysis'
-            };
+        function renderFolders() {
+            const folderList = document.getElementById('folderList');
+            folderList.innerHTML = '';
+            
+            folders.forEach(folder => {
+                const count = getFolderFileCount(folder.id);
+                const folderEl = document.createElement('div');
+                folderEl.className = 'file-item folder-row';
+                if (!isAdmin) folderEl.classList.add('readonly');
+                folderEl.setAttribute('data-folder', folder.id);
+                folderEl.setAttribute('draggable', 'false');
+                
+                folderEl.innerHTML = `
+                    <div class="file-icon">📂</div>
+                    <div class="file-name">${folder.name}</div>
+                    <div class="folder-actions">
+                        <button class="action-btn rename-btn" title="Rename">✏️</button>
+                        <button class="action-btn delete-btn" title="Delete">🗑️</button>
+                    </div>
+                    <div class="file-meta">${count} items</div>
+                `;
+                
+                if (isAdmin) {
+                    folderEl.addEventListener('dragover', handleDragOver);
+                    folderEl.addEventListener('dragleave', handleDragLeave);
+                    folderEl.addEventListener('drop', handleDrop);
+                }
+                
+                folderList.appendChild(folderEl);
+            });
+        }
+
+        function getFolderFileCount(folderId) {
+            // Count assigned files
+            const assignedCount = Object.values(folderAssignments).filter(f => f === folderId).length;
+            
+            // Count default files not yet moved
+            let defaultCount = 0;
+            document.querySelectorAll('[data-file]:not(.hidden)').forEach(file => {
+                const defaultFolders = file.getAttribute('data-folders');
+                const fileName = file.getAttribute('data-file');
+                if (defaultFolders && defaultFolders.includes(folderId) && !folderAssignments[fileName]) {
+                    defaultCount++;
+                }
+            });
+            
+            return assignedCount + defaultCount;
+        }
+
+        function updateFileVisibility() {
+            document.querySelectorAll('[data-file]').forEach(file => {
+                const fileName = file.getAttribute('data-file');
+                if (folderAssignments[fileName]) {
+                    file.classList.add('hidden');
+                } else {
+                    file.classList.remove('hidden');
+                }
+            });
+        }
+
+        function openFolder(folderId) {
+            currentFolder = folderId;
+            const folder = folders.find(f => f.id === folderId);
+            const folderName = folder ? folder.name : folderId;
             
             document.getElementById('foldersView').style.display = 'none';
             document.getElementById('folderContentsView').style.display = 'block';
-            document.getElementById('folderContentsTitle').textContent = folderNames[folderName] || folderName;
-            document.getElementById('pageTitle').textContent = 'DigitalBeauty Pro — ' + (folderNames[folderName] || folderName);
+            document.getElementById('folderContentsTitle').textContent = folderName;
+            document.getElementById('pageTitle').textContent = 'DigitalBeauty Pro — ' + folderName;
             
-            // Show back button
             document.getElementById('backBtn').classList.add('visible');
             
-            // Hide new folder button in folder view
             if (isAdmin) {
                 document.getElementById('newFolderBtn').style.display = 'none';
                 document.getElementById('dragHint').textContent = '📁 You are viewing folder contents';
             }
             
-            // Load folder contents
-            loadFolderContents(folderName);
+            loadFolderContents(folderId);
         }
 
         function goBack() {
@@ -378,42 +507,85 @@
                 document.getElementById('newFolderBtn').style.display = 'flex';
                 document.getElementById('dragHint').textContent = '💡 Drag files to folders to organize';
             }
+            
+            renderFolders();
         }
 
-        function loadFolderContents(folderName) {
+        function loadFolderContents(folderId) {
             const contentsList = document.getElementById('folderContentsList');
             const emptyState = document.getElementById('emptyState');
             contentsList.innerHTML = '';
             
-            // Get files assigned to this folder
-            const assignedFiles = Object.entries(folderAssignments)
-                .filter(([file, folder]) => folder === folderName)
-                .map(([file, folder]) => file);
+            // Get files in this folder
+            const filesInFolder = [];
             
-            // Also get files with default folder attribute
-            document.querySelectorAll('[data-file]').forEach(fileEl => {
-                const fileName = fileEl.getAttribute('data-file');
-                const defaultFolders = fileEl.getAttribute('data-folders');
-                
-                // If file is assigned to this folder or has it as default
-                if (assignedFiles.includes(fileName) || (defaultFolders && defaultFolders.includes(folderName))) {
-                    // Clone the file element
-                    const clone = fileEl.cloneNode(true);
-                    clone.draggable = false;
-                    clone.onclick = function() {
-                        window.location.href = `docs/${fileName}.html`;
-                    };
-                    contentsList.appendChild(clone);
+            // From assignments
+            Object.entries(folderAssignments).forEach(([fileName, folder]) => {
+                if (folder === folderId) {
+                    const fileEl = document.querySelector(`[data-file="${fileName}"]`);
+                    if (fileEl) {
+                        filesInFolder.push({
+                            name: fileName,
+                            title: fileEl.querySelector('.file-name').textContent,
+                            meta: fileEl.querySelector('.file-meta').textContent
+                        });
+                    }
                 }
             });
             
-            if (contentsList.children.length === 0) {
+            // From defaults (if not moved elsewhere)
+            document.querySelectorAll('[data-file]').forEach(fileEl => {
+                const fileName = fileEl.getAttribute('data-file');
+                const defaultFolders = fileEl.getAttribute('data-folders');
+                if (defaultFolders && defaultFolders.includes(folderId) && !folderAssignments[fileName]) {
+                    filesInFolder.push({
+                        name: fileName,
+                        title: fileEl.querySelector('.file-name').textContent,
+                        meta: fileEl.querySelector('.file-meta').textContent
+                    });
+                }
+            });
+            
+            if (filesInFolder.length === 0) {
                 emptyState.style.display = 'block';
                 contentsList.style.display = 'none';
             } else {
                 emptyState.style.display = 'none';
                 contentsList.style.display = 'block';
+                
+                filesInFolder.forEach(file => {
+                    const fileEl = document.createElement('div');
+                    fileEl.className = 'file-item';
+                    fileEl.innerHTML = `
+                        <div class="file-icon">📄</div>
+                        <div class="file-name">${file.title}</div>
+                        ${isAdmin ? '<button class="remove-from-folder">Remove</button>' : ''}
+                        <div class="file-meta">${file.meta}</div>
+                    `;
+                    
+                    fileEl.addEventListener('click', function(e) {
+                        if (!e.target.classList.contains('remove-from-folder')) {
+                            window.location.href = `docs/${file.name}.html`;
+                        }
+                    });
+                    
+                    if (isAdmin) {
+                        fileEl.querySelector('.remove-from-folder').addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            removeFileFromFolder(file.name);
+                        });
+                    }
+                    
+                    contentsList.appendChild(fileEl);
+                });
             }
+        }
+
+        function removeFileFromFolder(fileName) {
+            delete folderAssignments[fileName];
+            localStorage.setItem('dbFolderAssignments', JSON.stringify(folderAssignments));
+            loadFolderContents(currentFolder);
+            updateFileVisibility();
         }
 
         function logout() {
@@ -425,18 +597,11 @@
 
         function setupDragAndDrop() {
             const files = document.querySelectorAll('[data-file]');
-            const folders = document.querySelectorAll('[data-folder]');
-
+            
             files.forEach(file => {
                 file.draggable = true;
                 file.addEventListener('dragstart', handleDragStart);
                 file.addEventListener('dragend', handleDragEnd);
-            });
-
-            folders.forEach(folder => {
-                folder.addEventListener('dragover', handleDragOver);
-                folder.addEventListener('dragleave', handleDragLeave);
-                folder.addEventListener('drop', handleDrop);
             });
         }
 
@@ -464,60 +629,21 @@
             e.preventDefault();
             this.classList.remove('drag-over');
             const fileName = e.dataTransfer.getData('text/plain');
-            const folderName = this.getAttribute('data-folder');
+            const folderId = this.getAttribute('data-folder');
             
-            // Find the file element
             const fileElement = document.querySelector(`[data-file="${fileName}"]`);
             const fileTitle = fileElement.querySelector('.file-name').textContent;
             
-            // Store assignment in session storage
-            folderAssignments[fileName] = folderName;
-            sessionStorage.setItem('folderAssignments', JSON.stringify(folderAssignments));
-            
-            // Hide the file from root view
-            fileElement.classList.add('hidden');
-            
-            // Update folder count
-            updateFolderCounts();
-            
-            // Show feedback
-            const folderNames = {
-                'strategy': 'Strategy Documents',
-                'market': 'Market Analysis'
-            };
-            alert(`Moved "${fileTitle}" to "${folderNames[folderName] || folderName}"`);
-        }
-
-        function updateFolderCounts() {
-            // Count files in each folder
-            const counts = {};
-            
-            // Count from assignments
-            Object.values(folderAssignments).forEach(folder => {
-                counts[folder] = (counts[folder] || 0) + 1;
-            });
-            
-            // Count from default attributes for files not yet moved
-            document.querySelectorAll('[data-file]:not(.hidden)').forEach(file => {
-                const defaultFolders = file.getAttribute('data-folders');
-                if (defaultFolders) {
-                    defaultFolders.split(',').forEach(folder => {
-                        // Only count if not already assigned elsewhere
-                        const fileName = file.getAttribute('data-file');
-                        if (!folderAssignments[fileName]) {
-                            counts[folder.trim()] = (counts[folder.trim()] || 0) + 1;
-                        }
-                    });
-                }
-            });
+            // Save assignment
+            folderAssignments[fileName] = folderId;
+            localStorage.setItem('dbFolderAssignments', JSON.stringify(folderAssignments));
             
             // Update UI
-            if (document.getElementById('count-strategy')) {
-                document.getElementById('count-strategy').textContent = `${counts['strategy'] || 0} items`;
-            }
-            if (document.getElementById('count-market')) {
-                document.getElementById('count-market').textContent = `${counts['market'] || 0} items`;
-            }
+            updateFileVisibility();
+            renderFolders();
+            
+            const folder = folders.find(f => f.id === folderId);
+            alert(`Moved "${fileTitle}" to "${folder ? folder.name : folderId}"`);
         }
 
         function createNewFolder() {
@@ -533,39 +659,95 @@
         function confirmNewFolder() {
             const folderName = document.getElementById('folderNameInput').value.trim();
             if (folderName) {
-                const folderId = folderName.toLowerCase().replace(/\s+/g, '-');
-                const folderList = document.getElementById('folderList');
-                const newFolder = document.createElement('div');
-                newFolder.className = 'file-item folder-row';
-                newFolder.setAttribute('data-folder', folderId);
-                newFolder.innerHTML = `
-                    <div class="file-icon">📂</div>
-                    <div class="file-name">${folderName}</div>
-                    <div class="file-meta" id="count-${folderId}">0 items</div>
-                `;
+                const folderId = folderName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
                 
-                // Add drag and drop listeners (click is handled by event delegation)
-                newFolder.addEventListener('dragover', handleDragOver);
-                newFolder.addEventListener('dragleave', handleDragLeave);
-                newFolder.addEventListener('drop', handleDrop);
+                // Check if ID already exists
+                if (folders.some(f => f.id === folderId)) {
+                    alert('A folder with this name already exists');
+                    return;
+                }
                 
-                folderList.appendChild(newFolder);
+                folders.push({ id: folderId, name: folderName, count: 0 });
+                localStorage.setItem('dbFolders', JSON.stringify(folders));
+                
+                renderFolders();
                 closeModal();
             }
         }
 
-        // Close modal on outside click
-        document.getElementById('newFolderModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
+        function startRenameFolder(folderId) {
+            editingFolderId = folderId;
+            const folder = folders.find(f => f.id === folderId);
+            if (folder) {
+                document.getElementById('renameFolderInput').value = folder.name;
+                document.getElementById('renameFolderModal').classList.add('visible');
             }
-        });
+        }
 
-        // Enter key in modal
-        document.getElementById('folderNameInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                confirmNewFolder();
+        function closeRenameModal() {
+            document.getElementById('renameFolderModal').classList.remove('visible');
+            document.getElementById('renameFolderInput').value = '';
+            editingFolderId = null;
+        }
+
+        function confirmRenameFolder() {
+            const newName = document.getElementById('renameFolderInput').value.trim();
+            if (newName && editingFolderId) {
+                const folder = folders.find(f => f.id === editingFolderId);
+                if (folder) {
+                    folder.name = newName;
+                    localStorage.setItem('dbFolders', JSON.stringify(folders));
+                    renderFolders();
+                }
+                closeRenameModal();
             }
+        }
+
+        function startDeleteFolder(folderId) {
+            deletingFolderId = folderId;
+            document.getElementById('deleteFolderModal').classList.add('visible');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteFolderModal').classList.remove('visible');
+            deletingFolderId = null;
+        }
+
+        function confirmDeleteFolder() {
+            if (deletingFolderId) {
+                // Remove folder
+                folders = folders.filter(f => f.id !== deletingFolderId);
+                localStorage.setItem('dbFolders', JSON.stringify(folders));
+                
+                // Move all files from this folder back to root
+                Object.keys(folderAssignments).forEach(fileName => {
+                    if (folderAssignments[fileName] === deletingFolderId) {
+                        delete folderAssignments[fileName];
+                    }
+                });
+                localStorage.setItem('dbFolderAssignments', JSON.stringify(folderAssignments));
+                
+                renderFolders();
+                updateFileVisibility();
+                closeDeleteModal();
+            }
+        }
+
+        // Modal event handlers
+        document.getElementById('newFolderModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        document.getElementById('renameFolderModal').addEventListener('click', function(e) {
+            if (e.target === this) closeRenameModal();
+        });
+        document.getElementById('deleteFolderModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
+        document.getElementById('folderNameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') confirmNewFolder();
+        });
+        document.getElementById('renameFolderInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') confirmRenameFolder();
         });
     </script>
 </body>
