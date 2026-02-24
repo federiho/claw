@@ -1,94 +1,82 @@
 {
-  "lastUpdated": "2026-02-21T19:10:55.937Z",
+  "lastUpdated": "2026-02-24T18:15:00Z",
   "tasks": [
     {
       "id": "20",
       "title": "pagare Koushik prima",
       "status": "todo",
       "priority": "high",
-      "due": null,
-      "assignee": "FHG"
+      "due": null
     },
     {
       "id": "11",
       "title": "pagamenti Abhishek",
       "status": "todo",
       "priority": "high",
-      "due": "2026-02-22",
-      "assignee": "FHG"
+      "due": "2026-02-22"
     },
     {
       "id": "18",
       "title": "visita cardiologica fissare",
       "status": "todo",
       "priority": "high",
-      "due": "2026-02-22",
-      "assignee": "FHG"
-    },
-    {
-      "id": "3",
-      "title": "Khush aumento",
-      "status": "done",
-      "priority": "medium",
-      "due": null,
-      "assignee": "FHG"
+      "due": "2026-02-22"
     },
     {
       "id": "4",
       "title": "Esami del sangue",
       "status": "todo",
       "priority": "medium",
-      "due": "2026-02-22",
-      "assignee": "FHG"
+      "due": "2026-02-24"
     },
     {
       "id": "8",
       "title": "gestione pagamenti",
       "status": "todo",
       "priority": "medium",
-      "due": "2026-02-22",
-      "assignee": "FHG"
+      "due": "2026-02-22"
     },
     {
       "id": "9",
       "title": "revisione auto",
       "status": "todo",
       "priority": "medium",
-      "due": "2026-02-17",
-      "assignee": "FHG"
+      "due": "2026-02-24"
     },
     {
       "id": "6",
       "title": "cattolica assicurazione",
       "status": "todo",
       "priority": "medium",
-      "due": "2026-02-25",
-      "assignee": "FHG",
-      "notes": ""
+      "due": "2026-02-25"
     },
     {
       "id": "17",
       "title": "garage via olgiati",
       "status": "todo",
       "priority": "medium",
-      "due": "2026-02-22",
-      "assignee": "FHG"
+      "due": "2026-02-22"
     },
     {
       "id": "19",
       "title": "contratto lavera",
       "status": "todo",
       "priority": "medium",
-      "due": "2026-02-23",
-      "assignee": "FHG"
+      "due": "2026-02-23"
     },
     {
       "id": "21",
       "title": "Checkout registrazione domini (figmentalabs.com, digitalbeauty.ai, digitalbeauty.it.com) - €149.67",
       "status": "todo",
       "priority": "medium",
-      "due": "2026-02-28",
-      "assignee": "FHG"
+      "due": "2026-02-28"
+    },
+    {
+      "id": "22",
+      "title": "Dribble-Rodrigo-Rajeev",
+      "status": "todo",
+      "priority": "medium",
+      "due": "2026-02-25"
     }
   ]
 }
